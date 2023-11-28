@@ -256,6 +256,6 @@ def responseai_per_request(parameter, response_queue, filename, domain):
 
     # 예상치 못한 케이스 : 이미지도 아니고, 텍스트도 아닌?
     else:
-        response_queue.put( empty_response )
+        response_queue.put( empty_response)
 
     pass
