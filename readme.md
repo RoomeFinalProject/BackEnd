@@ -1,23 +1,28 @@
 # 파이썬 기반 웹서비스
+
     - flask, Django, fastapi
-    - fastapi 
+    - fastapi
         - flask 와 유사하게 자유도가 높고, 빠르게 구축가능
         - 처리속도는 가장 빠르고, 비동기 처리도 유연하다
         - 모델 서빙등에 많이 사용된다.
 
 # 설치
+
     - pip install fastapi
     - pip install "uvicorn[standard]"
 
 # 구동
+
     - uvicorn run:app --reload
 
 # 접속
+
     - http://127.0.0.1:8000
     - ngrok.com 진입, 다운로드
     - ngrok config add-authtoken <개인토큰>
 
 # 카카오톡 메시지 규격
+
         {
         "intent": {
             "id": "je987ax8ygx9yaupfjntvx7q",
