@@ -4,6 +4,7 @@
 # AWS의 lambda로 가면 환경변수로 세팅
 from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles  # 정적 디렉토리(js, css, 리소스(이미지등등)) 지정
+from fastapi.middleware.cors import CORSMiddleware
 import json
 from openai import OpenAI
 import os
@@ -12,7 +13,21 @@ import time      # 답변 시간 계산용, 제한 시간 체크해서 대응
 import queue as q # 자료구조 큐, 요청을 차곡차곡 쌓아서 하나씩 꺼내서 처리
 import urllib.request as req
 import numpy as np
-import uvicorn
+
+app = FastAPI()
+origins = [
+    "http://localhost",
+    "http://localhost:3000",  # React 개발 서버 주소
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 ### 01. api key ---------------------------------------------------
 
@@ -20,7 +35,7 @@ def get_openai_key():
     try:
         # 개발시 로컬파일
         # openai_key.json 파일을 읽어서 "OPENAI_API_KEY" 키값 획득
-        key_path = 'openai_key.json'
+        key_path = '../openai_key.json'
         with open (key_path) as f:
             data = json.load(f)
             # print( data )
