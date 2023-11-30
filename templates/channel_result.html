@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Channel Result</title>
+</head>
+<body>
+    <h2>{{ channel_name }} - Latest Video Summary</h2>
+    <p><strong>Latest Video Title:</strong> {{ latest_video_info.title }}</p>
+    <p><strong>Summary:</strong> {{ latest_video_info.summary }}</p>
+
+    <form action="/channel/{{ channel_id }}" method="post">
+        <button type="submit">Update Summary</button>
+    </form>
+</body>
+</html>
