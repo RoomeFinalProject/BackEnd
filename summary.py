@@ -12,9 +12,13 @@ from youtube_transcript_api import YouTubeTranscriptApi
 from google.oauth2 import service_account
 from langchain.chat_models import ChatOpenAI
 from langchain.embeddings import HuggingFaceEmbeddings
+from langchain.embeddings import OpenAIEmbeddings
 from llama_index.embeddings.langchain import LangchainEmbedding
 from pathlib import Path
 import redis
+from fastapi.responses import JSONResponse
+
+
 # 레디스 클라이언트 생성: 연결 설정
 redis_client = redis.StrictRedis(host='localhost', port=6379, db=0)
 
@@ -26,7 +30,7 @@ def load_documents_from_text(transcript_text):
     documents = [Document(text=sentence.strip()) for sentence in sentences if sentence.strip()]
     return documents
     
-# load_api_key 함수 정의 추가
+# 1. load_api_key 함수 정의 추가
 def load_api_keys(api_key_file_path: str) -> tuple:
     try:
         with open(api_key_file_path, 'r') as file:
@@ -40,7 +44,9 @@ def load_api_keys(api_key_file_path: str) -> tuple:
 # Jinja2 템플릿 설정
 templates = Jinja2Templates(directory=os.path.join(script_directory, "templates"))
 
-# OpenAI API 키 로드, 객체 생성
+
+
+# 2. OpenAI API 키 로드, 객체 생성
 openai_api_key_path = os.path.join(script_directory, '..', 'openai_key.json').replace('\\', '/')
 
 try:
@@ -52,19 +58,20 @@ try:
 except Exception as e:
     print(f"OpenAI API 키를 로드하는 중 오류 발생: {e}")
         
-# API 키와 서비스 계정 파일 등의 설정
+# 3. API 키와 서비스 계정 파일 등의 설정
 youtube_api_key = os.path.join(script_directory, '..', 'real_youtube_api_key.json').replace('\\', '/') # fastapi_summary 상위 폴더의 키를 참조
 service_account_file = os.path.join(script_directory, '..', 'youtube_api_key.json').replace('\\', '/')
 
 # YouTube API 빌드
 youtube = build("youtube", "v3", credentials=service_account.Credentials.from_service_account_file(service_account_file))
 
-# 채널 ID와 이름을 매핑
+# 4. 채널 ID와 이름을 매핑
 channel_mapping = {
     "UCr7XsrSrvAn_WcU4kF99bbQ": "박곰희TV",
-    "UCv-spDeZBGYVUI9eGXGaLSg": "시윤주식",
-    "UCO8tX-tvkJmN70sALNmXhCg": "친절한 재승씨",
+
 }
+    # "UCv-spDeZBGYVUI9eGXGaLSg": "시윤주식",
+    # "UCO8tX-tvkJmN70sALNmXhCg": "친절한 재승씨",
 #     "UCFznPlqnBtRKQhtkm6GGoRQ": "달팽이주식",
 #     "UCWeYU4snOLj4Jj52Q9VCcOg": "주식하는강이사",
 #     "UCw8pcmyPWGSik7bjJpeINlA": "기릿의 주식노트 Let's Get It",
@@ -75,9 +82,9 @@ channel_mapping = {
 #     "UCcIkTkPN8QP3PzJuwACgxMg": "공모주린이의 투자백서",
 #     "UCVAbB2v_MCpAWNVTGxVLRxw": "안정모의 주식투자",
 
-# FastAPI 애플리케이션 초기화
+# 5. FastAPI 애플리케이션 초기화 및 경로 정의
 app = FastAPI()
-# 문서 불러오기
+# 6. 문서 불러오기
 def load_video_data(channel_id):
     redis_key = f"{channel_id}"
     loaded_data = redis_client.get(redis_key)
@@ -86,17 +93,19 @@ def load_video_data(channel_id):
         loaded_data = loaded_data.decode('utf-8')
         video_title, korean_transcript = loaded_data.split("\n", 1)
         print("데이터를 Redis에서 로드했습니다.")
+        
     else:
         response_items = []
 
         try:
-            response = youtube.search().list(part="id", channelId=channel_id, order="date", maxResults=1).execute()
+            response = youtube.search().list(part="id, snippet", channelId=channel_id, order="date", maxResults=1).execute()
             print(response)
             # YouTube API 호출에 대한 응답 확인
             if "items" not in response:
                 raise Exception("No video items in the YouTube API response")
 
             response_items = response.get("items", [])
+            print("response_items", response_items)
         except Exception as e:
             print(f"Error during YouTube API request: {e}")
             # 발생한 예외에 대한 추가 디버깅을 위해 예외를 출력합니다.
@@ -120,30 +129,40 @@ def load_video_data(channel_id):
         else:
             print("API 응답에 비디오 아이템이 없습니다. API 응답을 확인하세요.")
     return video_title, korean_transcript
-# 문서 요약 함수
+
+# 7. 문서 요약 함수
 def summarize_documents(documents, embed_model):
     summary = ""
     for j, doc in enumerate(documents, start=1):
         selected_index = GPTVectorStoreIndex.from_documents([doc], service_context=ServiceContext.from_defaults(embed_model=embed_model))
         result = selected_index.as_query_engine().query(f'{j}번 텍스트의 내용을 Summarize the following in 10 bullet points.')
         print(f"문서 요약:\n{result}\n")
-        summary += result[0].content + " "
-        print(summary)
+        print("result type:", type(result))
+        summary += str(result)
+        print("summary:", summary)
     return summary
-# 모델 색인화 과정
+
+# 8. 모델 색인화 과정
 def get_video_info(channel_id, channel_name, num_videos=2):
-    all_video_data = []
+    all_video_data = []  # 특정 채널의 동영상 정보 저장
     try:
         for _ in range(num_videos):
-            video_title, korean_transcript = load_video_data(channel_id)
-
+            
+            video_title, korean_transcript = load_video_data(channel_id) # 함수를 호출하여 Redis 캐시 또는 YouTube API에서 동영상의 제목과 한국어 대본을 가져옵니다.
             documents = load_documents_from_text(korean_transcript)
+            
+            # 임베딩 모델 초기화
             embed_model = LangchainEmbedding(HuggingFaceEmbeddings(
                 model_name='sentence-transformers/xlm-r-100langs-bert-base-nli-stsb-mean-tokens'
             ))
-
+            #  문서 요약 생성
             summary = summarize_documents(documents, embed_model)
+            print("test232323")
+            print( "channel_name", channel_name,
+                "video_title", video_title,
+                "summary", summary)
 
+            # 딕셔너리 생성
             video_info = {
                 "channel_name": channel_name,
                 "video_title": video_title,
@@ -154,29 +173,40 @@ def get_video_info(channel_id, channel_name, num_videos=2):
         print(f"오류가 발생했습니다: {e}")
         raise HTTPException(status_code=500, detail="오류가 발생했습니다.")
     return all_video_data
-# FastAPI 라우트
-@app.get("/")
-async def get_latest_video(request: Request):
-    try:
-        all_video_data = []  # 각 채널의 데이터를 저장할 리스트
 
-        for channel_id, channel_name in channel_mapping.items():
-            try:
-                video_info = get_video_info(channel_id, channel_name)
-                all_video_data.append(video_info)
-                print(all_video_data)
-            except Exception as channel_error:
-                print(f"Error retrieving video for channel {channel_name}: {str(channel_error)}")
-                continue
-        # 템플릿 렌더링
-        if not all_video_data:
-            return templates.TemplateResponse("roomae.html", {"request": request, "channels": all_video_data})
-        else:
-            # 정상적인 응답을 반환
-            return templates.TemplateResponse("roomae.html", {"request": request, "channels": all_video_data})
-    except Exception as app_error:
-        print(f"Error in FastAPI app: {str(app_error)}")
-        return HTTPException(status_code=500, detail="애플리케이션 오류 발생")
+# 9.FastAPI 라우트 (경로정의)
+@app.get("/")
+async def get_latest_video():
+    all_video_data = []
+    for channel_id, channel_name in channel_mapping.items():
+        video_info = get_video_info(channel_id, channel_name)
+        all_video_data.append(video_info)
+    print("all_video_data", all_video_data)
+
+    return JSONResponse(content=all_video_data)
+
+    # return
+    # try:
+    #     all_video_data = []  # 각 채널의 데이터를 저장할 리스트
+    #     print("channel_id", "channel_name")
+    #     for channel_id, channel_name in channel_mapping.items():
+    #         print("test1", "test1")
+    #         try:
+    #             video_info = get_video_info(channel_id, channel_name)
+    #             all_video_data.append(video_info)
+    #             print(all_video_data)
+    #         except Exception as channel_error:
+    #             print(f"Error retrieving video for channel {channel_name}: {str(channel_error)}")
+    #             continue
+    #     # 템플릿 렌더링
+    #     if not all_video_data:
+    #         return templates.TemplateResponse("roomae.html", {"request": request, "channels": all_video_data})
+    #     else:
+    #         # 정상적인 응답을 반환
+    #         return templates.TemplateResponse("roomae.html", {"request": request, "channels": all_video_data})
+    # except Exception as app_error:
+    #     print(f"Error in FastAPI app: {str(app_error)}")
+    #     return HTTPException(status_code=500, detail="애플리케이션 오류 발생")
 
 if __name__ == "__main__":
     import uvicorn
