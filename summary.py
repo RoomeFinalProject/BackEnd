@@ -17,6 +17,7 @@ from llama_index.embeddings.langchain import LangchainEmbedding
 from pathlib import Path
 import redis
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 
 
 # 레디스 클라이언트 생성: 연결 설정
@@ -68,11 +69,12 @@ youtube = build("youtube", "v3", credentials=service_account.Credentials.from_se
 # 4. 채널 ID와 이름을 매핑
 channel_mapping = {
     "UCr7XsrSrvAn_WcU4kF99bbQ": "박곰희TV",
+    "UCv-spDeZBGYVUI9eGXGaLSg": "시윤주식",
+    "UCO8tX-tvkJmN70sALNmXhCg": "친절한 재승씨",
+    "UCFznPlqnBtRKQhtkm6GGoRQ": "달팽이주식",
 
 }
-    # "UCv-spDeZBGYVUI9eGXGaLSg": "시윤주식",
-    # "UCO8tX-tvkJmN70sALNmXhCg": "친절한 재승씨",
-#     "UCFznPlqnBtRKQhtkm6GGoRQ": "달팽이주식",
+
 #     "UCWeYU4snOLj4Jj52Q9VCcOg": "주식하는강이사",
 #     "UCw8pcmyPWGSik7bjJpeINlA": "기릿의 주식노트 Let's Get It",
 #     "UCM_HKYb6M9ZIAjosJfWS3Lw": "미주부",
@@ -84,6 +86,20 @@ channel_mapping = {
 
 # 5. FastAPI 애플리케이션 초기화 및 경로 정의
 app = FastAPI()
+# Set up CORS
+origins = [
+    "http://localhost:3000",  # Adjust the frontend URL as needed
+    # Add other frontend origins as needed
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # 6. 문서 불러오기
 def load_video_data(channel_id):
     redis_key = f"{channel_id}"
@@ -99,7 +115,6 @@ def load_video_data(channel_id):
 
         try:
             response = youtube.search().list(part="id, snippet", channelId=channel_id, order="date", maxResults=1).execute()
-            print(response)
             # YouTube API 호출에 대한 응답 확인
             if "items" not in response:
                 raise Exception("No video items in the YouTube API response")
@@ -137,9 +152,7 @@ def summarize_documents(documents, embed_model):
         selected_index = GPTVectorStoreIndex.from_documents([doc], service_context=ServiceContext.from_defaults(embed_model=embed_model))
         result = selected_index.as_query_engine().query(f'{j}번 텍스트의 내용을 Summarize the following in 10 bullet points.')
         print(f"문서 요약:\n{result}\n")
-        print("result type:", type(result))
         summary += str(result)
-        print("summary:", summary)
     return summary
 
 # 8. 모델 색인화 과정
@@ -157,10 +170,6 @@ def get_video_info(channel_id, channel_name, num_videos=2):
             ))
             #  문서 요약 생성
             summary = summarize_documents(documents, embed_model)
-            print("test232323")
-            print( "channel_name", channel_name,
-                "video_title", video_title,
-                "summary", summary)
 
             # 딕셔너리 생성
             video_info = {
@@ -181,10 +190,11 @@ async def get_latest_video():
     for channel_id, channel_name in channel_mapping.items():
         video_info = get_video_info(channel_id, channel_name)
         all_video_data.append(video_info)
-    print("all_video_data", all_video_data)
 
     return JSONResponse(content=all_video_data)
 
+
+    # JSONResponse(content=all_video_data)
     # return
     # try:
     #     all_video_data = []  # 각 채널의 데이터를 저장할 리스트

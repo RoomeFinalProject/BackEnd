@@ -11,3 +11,4 @@ requests
 redis
 fastapi_cache
 cache-manager
+uvicorn
