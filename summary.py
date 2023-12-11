@@ -69,14 +69,15 @@ youtube = build("youtube", "v3", credentials=service_account.Credentials.from_se
 # 4. 채널 ID와 이름을 매핑
 channel_mapping = {
     "UCr7XsrSrvAn_WcU4kF99bbQ": "박곰희TV",
-    "UCWBb2cJKOIRUSI_rgndkgWw": "주주톡"
-}
-
-    # "UCv-spDeZBGYVUI9eGXGaLSg": "시윤주식",
+    "UCWBb2cJKOIRUSI_rgndkgWw": "주주톡",
+    "UCv-spDeZBGYVUI9eGXGaLSg": "시윤주식",
     # "UCWeYU4snOLj4Jj52Q9VCcOg": "주식하는강이사",
     # "UCpqD9_OJNtF6suPpi6mOQCQ": "월가아재의 과학적 투자",
     # "UCHWFdDG50K-k8btmLG_2Lcg": "어니스트와 주식 빌드업",
     # "UCO8tX-tvkJmN70sALNmXhCg": "친절한 재승씨",
+}
+
+
 #     "UCWeYU4snOLj4Jj52Q9VCcOg": "주식하는강이사",
 #     "UCw8pcmyPWGSik7bjJpeINlA": "기릿의 주식노트 Let's Get It",
 #     "UCM_HKYb6M9ZIAjosJfWS3Lw": "미주부",
@@ -148,13 +149,14 @@ def load_video_data(channel_id):
 
 # 7. 문서 요약 함수
 def summarize_documents(documents, embed_model):
-    summaries = ""
-    for j, doc in enumerate(documents, start=1):
-        selected_index = GPTVectorStoreIndex.from_documents([doc], service_context=ServiceContext.from_defaults(embed_model=embed_model))
-        result = selected_index.as_query_engine().query(f'{j}번 텍스트의 내용을 Summarize the following in 10 bullet points.')
-        print(f"문서 요약:\n{result}\n")
-        summaries += str(result)
-    return summaries
+    summary = ""
+    if not documents:
+        return summary  # 빈 documents에 대한 처리
+    # 하나의 요약만 생성
+    selected_index = GPTVectorStoreIndex.from_documents(documents, service_context=ServiceContext.from_defaults(embed_model=embed_model))
+    result = selected_index.as_query_engine().query('텍스트의 내용을 Summarize the following in 10 bullet points.')
+    print(f"문서 요약:\n{result}\n")
+    summary = str(result)
 
 # 8. 모델 색인화 과정( 모델명: 다국어로 훈련된 언어 모델 XLM-RoBERTa )
 def get_video_info(channel_id, channel_name, num_videos=1):
@@ -172,13 +174,13 @@ def get_video_info(channel_id, channel_name, num_videos=1):
                     model_name='sentence-transformers/xlm-r-100langs-bert-base-nli-stsb-mean-tokens'
                 ))
                 #  문서 요약 생성
-                summaries = summarize_documents(documents, embed_model)
+                summary = summarize_documents(documents, embed_model)
 
                 # 딕셔너리 생성
                 video_info = {
                     "channel_name": channel_name,
                     "video_title": video_title,
-                    "summary": summaries,
+                    "summary": summary,
                 }
                 all_video_data.append(video_info)
     except Exception as e:
