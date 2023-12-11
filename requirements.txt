@@ -4,4 +4,4 @@ uvicorn
 youtube_transcript_api
 langchain
 python_dotenv
-openai==0.28
+openai

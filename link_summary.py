@@ -4,13 +4,17 @@ from fastapi.templating import Jinja2Templates
 from youtube_transcript_api import YouTubeTranscriptApi
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from dotenv import load_dotenv
+from openai import OpenAI
 import openai
 import os
 
 app = FastAPI()
 
 # Specify the path to your .env file
-env_path = '/Users/user/Desktop/FinalProject/openai_api.env'  # Change the Path
+# env_path = 'openai_api.env'   # Change the Path
+env_path = '/Users/user/Desktop/FinalProject/openai_api.env'
+
+
 # Load the OpenAI API key from the .env file
 load_dotenv(env_path)
 openai.api_key = os.getenv('OPENAI_API_KEY')
@@ -54,7 +58,9 @@ async def summarize_with_langchain_and_openai(transcript, language_code, model_n
 
 
     # Start summarizing using OpenAI
-    response = openai.ChatCompletion.create(
+    client = OpenAI()
+    
+    response = client.chat.completions.create(
         model=model_name,
         messages=[
             {'role': 'system', 'content': system_prompt},
@@ -62,8 +68,7 @@ async def summarize_with_langchain_and_openai(transcript, language_code, model_n
         ],
         temperature=1
     )
-    
-    return response['choices'][0]['message']['content']
+    return response.choices[0].message.content
 
 @app.get("/", response_class=HTMLResponse)
 def read_root(request: Request):
