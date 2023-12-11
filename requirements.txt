@@ -1,8 +1,7 @@
 # pip install -r requirements.txt
-OpenAI
-llama-index
-google-api-python-client
-youtube-transcript-api
-llama_index
+fastapi
+uvicorn
+youtube_transcript_api
 langchain
-sentence_transformers
+python_dotenv
+openai==0.28
