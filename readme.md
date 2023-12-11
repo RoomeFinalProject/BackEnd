@@ -4,6 +4,7 @@
         - conda install fastapi -y
     - pip install "uvicorn[standard]"
         - conda install "uvicorn[standard]" -y
+    - uvicorn run_JJ:app --reload --port 8001 (8001번 포트로 실행)
 
 # 코드 실행전 주의사항
 

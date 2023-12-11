@@ -69,14 +69,13 @@ youtube = build("youtube", "v3", credentials=service_account.Credentials.from_se
 # 4. 채널 ID와 이름을 매핑
 channel_mapping = {
     "UCr7XsrSrvAn_WcU4kF99bbQ": "박곰희TV",
-    "UCv-spDeZBGYVUI9eGXGaLSg": "시윤주식",
-    "UCWeYU4snOLj4Jj52Q9VCcOg": "주식하는강이사",
-    # "UCFznPlqnBtRKQhtkm6GGoRQ": "달팽이주식",
-    # "UCVAbB2v_MCpAWNVTGxVLRxw": "안정모의 주식투자",
-
+    "UCWBb2cJKOIRUSI_rgndkgWw": "주주톡"
 }
 
-
+    # "UCv-spDeZBGYVUI9eGXGaLSg": "시윤주식",
+    # "UCWeYU4snOLj4Jj52Q9VCcOg": "주식하는강이사",
+    # "UCpqD9_OJNtF6suPpi6mOQCQ": "월가아재의 과학적 투자",
+    # "UCHWFdDG50K-k8btmLG_2Lcg": "어니스트와 주식 빌드업",
     # "UCO8tX-tvkJmN70sALNmXhCg": "친절한 재승씨",
 #     "UCWeYU4snOLj4Jj52Q9VCcOg": "주식하는강이사",
 #     "UCw8pcmyPWGSik7bjJpeINlA": "기릿의 주식노트 Let's Get It",
@@ -138,22 +137,23 @@ def load_video_data(channel_id):
                     raise YouTubeTranscriptApi.CouldNotRetrieveTranscript("자막이 없습니다.")
                 korean_transcript = " ".join(entry["text"] for entry in transcript)
                 video_title = first_item.get("snippet", {}).get("title", "")
-                redis_client.set(redis_key, f"{video_title}\n{korean_transcript}") # 레디스에 저장
             except Exception as e:
                 print(f"자막을 검색하는 동안 오류가 발생했습니다: {e}")
                 raise HTTPException(status_code=500, detail=f"자막 검색 중 오류 발생: {e}")
+            redis_client.set(redis_key, f"{video_title}\n{korean_transcript}") # 레디스에 저장
+            print("redis에 저장하였습니다.")
         else:
             print("API 응답에 비디오 아이템이 없습니다. API 응답을 확인하세요.")
     return video_title, korean_transcript
 
 # 7. 문서 요약 함수
 def summarize_documents(documents, embed_model):
-    summaries = []
+    summaries = ""
     for j, doc in enumerate(documents, start=1):
         selected_index = GPTVectorStoreIndex.from_documents([doc], service_context=ServiceContext.from_defaults(embed_model=embed_model))
         result = selected_index.as_query_engine().query(f'{j}번 텍스트의 내용을 Summarize the following in 10 bullet points.')
         print(f"문서 요약:\n{result}\n")
-        summaries.append(str(result))
+        summaries += str(result)
     return summaries
 
 # 8. 모델 색인화 과정( 모델명: 다국어로 훈련된 언어 모델 XLM-RoBERTa )
