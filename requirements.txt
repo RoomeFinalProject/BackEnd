@@ -1,0 +1,7 @@
+# pip install -r requirements.txt
+fastapi
+uvicorn
+youtube_transcript_api
+langchain
+python_dotenv
+openai==0.28
