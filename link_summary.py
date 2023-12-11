@@ -57,7 +57,9 @@ async def summarize_with_langchain_and_openai(transcript, language_code, model_n
 
 
     # Start summarizing using OpenAI
-    response = openai.ChatCompletion.create(
+    client = OpenAI()
+    
+    response = client.chat.completions.create(
         model=model_name,
         messages=[
             {'role': 'system', 'content': system_prompt},
@@ -65,8 +67,7 @@ async def summarize_with_langchain_and_openai(transcript, language_code, model_n
         ],
         temperature=1
     )
-    
-    return response['choices'][0]['message']['content']
+    return response.choices[0].message.content
 
 @app.get("/", response_class=HTMLResponse)
 def read_root(request: Request):
