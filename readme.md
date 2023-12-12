@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 설정 순서
 1.1 가상환경 만들기 
     - python -m venv venv_chatbot
@@ -30,7 +29,6 @@
     - git push origin main:chatbot
     - git push origin -d chatbot : 원격 브랜치 삭제
     - git push origin chatbot : 원격 브랜치 추가
-=======
 # 설치
 
     - pip install fastapi
@@ -55,4 +53,3 @@
 
 - error: failed to push some refs to 'https://github.com/userId/userProject.git'
   -> git pull origin 브런치명 --allow-unrelated-histories 하고 다시 add - commit - push 하면 행복 git
->>>>>>> b88e9816b51cefa7dc578257dcc09d4b2444ef99
