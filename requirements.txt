@@ -13,3 +13,4 @@ redis
 fastapi_cache
 cache-manager
 annoy
+pymongo
