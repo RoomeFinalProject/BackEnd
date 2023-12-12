@@ -15,7 +15,7 @@ import numpy as np
 import uvicorn
 from fastapi.responses import JSONResponse
 from Loading import file_names
-from PromptandSum import summary_list
+from resSummary import summary_list
 
 
 
