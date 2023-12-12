@@ -20,6 +20,7 @@ from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 
+
 # 레디스 클라이언트 생성: 연결 설정
 redis_client = redis.StrictRedis(host='localhost', port=6379, db=0)
 
@@ -157,6 +158,7 @@ def summarize_documents(documents, embed_model):
     result = selected_index.as_query_engine().query('텍스트의 내용을 Summarize the following in 10 bullet points.')
     print(f"문서 요약:\n{result}\n")
     summary = str(result)
+    return summary
 
 # 8. 모델 색인화 과정( 모델명: 다국어로 훈련된 언어 모델 XLM-RoBERTa )
 def get_video_info(channel_id, channel_name, num_videos=1):
@@ -189,12 +191,13 @@ def get_video_info(channel_id, channel_name, num_videos=1):
     return all_video_data
 
 # 9.FastAPI 라우트 (경로정의)
-@app.get("/")
+@app.get("/youtube")
 async def get_latest_video():
     all_video_data = []
     for channel_id, channel_name in channel_mapping.items():
         video_info = get_video_info(channel_id, channel_name)
         all_video_data.append(video_info)
+    print(all_video_data)
 
     return JSONResponse(content=all_video_data)
 

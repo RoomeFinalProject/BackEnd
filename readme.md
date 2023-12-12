@@ -17,3 +17,8 @@
     - uvicorn summary:app --reload
 
 # 확인용
+
+# git에서 다음과 같은 오류일떄
+
+- error: failed to push some refs to 'https://github.com/userId/userProject.git'
+  -> git pull origin 브런치명 --allow-unrelated-histories 하고 다시 add - commit - push 하면 행복 git
