@@ -49,12 +49,20 @@ async def summarize_with_langchain_and_openai(transcript, language_code, model_n
     texts = text_splitter.split_text(transcript)
     text_to_summarize = " ".join(texts[:4]) # Adjust this as needed
     
-    # Prepare the prompt for summarization
-    system_prompt = '요약을 생성해주세요!'
-    prompt = f'''다음 텍스트를 {language_code}로 요약해주세요.
-    텍스트: {text_to_summarize}
+    # # Prepare the prompt for summarization
+    # system_prompt = '요약을 생성해주세요!'
+    # prompt = f'''다음 텍스트를 {language_code}로 요약해주세요.
+    # 텍스트: {text_to_summarize}
     
-    텍스트의 내용을 Summarize the following in 10 bullet points.'''
+    # 텍스트의 내용을 Summarize the following in 10 bullet points.'''
+    
+    # Prepare the prompt for summarization
+    system_prompt = 'I want you to act as a Shakespeare that can create good summaries!'
+    prompt = f'''Summarize the following text in {language_code}.
+    Text: {text_to_summarize}
+
+    Add a title to the summary in {language_code}. 
+    Include an INTRODUCTION, BULLET POINTS if possible, and a CONCLUSION in {language_code}.'''
 
 
     # Start summarizing using OpenAI
