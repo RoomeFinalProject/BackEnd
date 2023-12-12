@@ -1,4 +1,8 @@
-# pip install -r requirements.txt
+OpenAI
+google-api-python-client
+llama_index
+langchain
+sentence_transformers
 fastapi
 uvicorn
 youtube_transcript_api
