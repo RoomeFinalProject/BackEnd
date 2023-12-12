@@ -4,15 +4,14 @@ from fastapi.templating import Jinja2Templates
 from youtube_transcript_api import YouTubeTranscriptApi
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from dotenv import load_dotenv
-from openai import OpenAI
 import openai
 import os
 
 app = FastAPI()
 
 # Specify the path to your .env file
-# env_path = 'openai_api.env'   # Change the Path
-env_path = '/Users/user/Desktop/FinalProject/openai_api.env'
+env_path = 'openai_api.env'   # Change the Path
+# env_path = '/Users/user/Desktop/FinalProject/youtube_summarizer_fastapi/openai_api.env'
 
 
 # Load the OpenAI API key from the .env file
@@ -49,20 +48,12 @@ async def summarize_with_langchain_and_openai(transcript, language_code, model_n
     texts = text_splitter.split_text(transcript)
     text_to_summarize = " ".join(texts[:4]) # Adjust this as needed
     
-    # # Prepare the prompt for summarization
-    # system_prompt = '요약을 생성해주세요!'
-    # prompt = f'''다음 텍스트를 {language_code}로 요약해주세요.
-    # 텍스트: {text_to_summarize}
-    
-    # 텍스트의 내용을 Summarize the following in 10 bullet points.'''
-    
     # Prepare the prompt for summarization
-    system_prompt = 'I want you to act as a Shakespeare that can create good summaries!'
-    prompt = f'''Summarize the following text in {language_code}.
-    Text: {text_to_summarize}
-
-    Add a title to the summary in {language_code}. 
-    Include an INTRODUCTION, BULLET POINTS if possible, and a CONCLUSION in {language_code}.'''
+    system_prompt = '요약을 생성해주세요!'
+    prompt = f'''다음 텍스트를 {language_code}로 요약해주세요.
+    텍스트: {text_to_summarize}
+    
+    텍스트의 내용을 Summarize the following in 10 bullet points.'''
 
 
     # Start summarizing using OpenAI
