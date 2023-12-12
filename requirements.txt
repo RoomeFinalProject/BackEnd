@@ -3,6 +3,12 @@ OpenAI
 llama-index
 google-api-python-client
 youtube-transcript-api
-llama_index
 langchain
 sentence_transformers
+fastapi
+uvicorn
+requests
+redis
+fastapi_cache
+cache-manager
+uvicorn
