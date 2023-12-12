@@ -1,11 +1,12 @@
 OpenAI
 google-api-python-client
-llama_index
+youtube-transcript-api
 langchain
 sentence_transformers
 fastapi
 uvicorn
-youtube_transcript_api
-langchain
-python_dotenv
-openai
+requests
+redis
+fastapi_cache
+cache-manager
+uvicorn

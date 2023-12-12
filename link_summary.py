@@ -4,10 +4,28 @@ from fastapi.templating import Jinja2Templates
 from youtube_transcript_api import YouTubeTranscriptApi
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from dotenv import load_dotenv
-import openai
+import openai 
 import os
+from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
+from openai import OpenAI
+
 
 app = FastAPI()
+
+# Set up CORS
+origins = [
+    "http://localhost:3000",  # Adjust the frontend URL as needed
+    # Add other frontend origins as needed
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Specify the path to your .env file
 env_path = 'openai_api.env'   # Change the Path
@@ -49,8 +67,8 @@ async def summarize_with_langchain_and_openai(transcript, language_code, model_n
     text_to_summarize = " ".join(texts[:4]) # Adjust this as needed
     
     # Prepare the prompt for summarization
-    system_prompt = '요약을 생성해주세요!'
-    prompt = f'''다음 텍스트를 {language_code}로 요약해주세요.
+    system_prompt = '요약을 생성해주세요!' 
+    prompt = f'''다음 텍스트를 {language_code}로 요약해주세요..
     텍스트: {text_to_summarize}
     
     텍스트의 내용을 Summarize the following in 10 bullet points.'''
@@ -69,12 +87,40 @@ async def summarize_with_langchain_and_openai(transcript, language_code, model_n
     )
     return response.choices[0].message.content
 
-@app.get("/", response_class=HTMLResponse)
-def read_root(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
+# @app.get("/linkedVideo", response_class=JSONResponse)
+# def read_root(request: Request):
+#     return templates.TemplateResponse("index.html", {"request": request})
 
-@app.post("/summarize")
-async def summarize(request: Request, link: str = Form(...)):
+# @app.post("/linkedVideo")
+# async def linkedVideo(request: Request, link: str = Form(...)):
+#     try:
+#         progress = 0
+#         status_text = ''
+
+#         status_text = '트랜스크립트 불러오는 중...'
+#         progress = 25
+
+#         # Getting both the transcript and language_code
+#         transcript, language_code = get_transcript(link)
+
+#         status_text = '요약본 생성 중...'
+#         progress = 75
+
+#         model_name = 'gpt-3.5-turbo'
+#         summary = await summarize_with_langchain_and_openai(transcript, language_code, model_name)
+
+#         status_text = '요약:'
+#         progress = 100
+#         print(summary)
+        
+#         return JSONResponse(content={"summary": summary})
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=str(e))
+
+
+# 9.FastAPI 라우트 (경로정의)
+@app.get("/linkedVideo")
+async def linked_video(request: Request, link: str):
     try:
         progress = 0
         status_text = ''
@@ -93,7 +139,8 @@ async def summarize(request: Request, link: str = Form(...)):
 
         status_text = '요약:'
         progress = 100
-
-        return templates.TemplateResponse("index.html", {"request": request, "summary": summary})
+        print(summary)
+        
+        return JSONResponse(content={"summary": summary})
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

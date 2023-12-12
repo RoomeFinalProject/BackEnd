@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+<<<<<<< HEAD
 <head>
     <title>YouTube Summarizer</title>
 </head>
@@ -9,15 +10,35 @@
         <label for="link">요약하고 싶은 유튜브 영상의 링크:</label>
         <input type="text" id="link" name="link">
         <input type="submit" value="요약하기">
+=======
+  <head>
+    <title>YouTube Summarizer</title>
+  </head>
+  <body>
+    <h1>유튜브 요약</h1>
+    <form action="/linkedVideo" method="post">
+      <label for="link">요약하고 싶은 유튜브 영상의 링크:</label>
+      <input type="text" id="link" name="link" />
+      <input type="submit" value="요약하기" />
+>>>>>>> c4f133e5767caf3fd17baa0266935ef8a9bea1a8
     </form>
 
     {% if summary %}
     <h2>요약 결과</h2>
     <ul>
+<<<<<<< HEAD
         {% for point in summary.split("\n") %}
             <li>{{ point }}</li>
         {% endfor %}
     </ul>
     {% endif %}
 </body>
+=======
+      {% for point in summary.split("\n") %}
+      <li>{{ point }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+  </body>
+>>>>>>> c4f133e5767caf3fd17baa0266935ef8a9bea1a8
 </html>
