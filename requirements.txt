@@ -1,6 +1,10 @@
 # pip install -r requirements.txt
 OpenAI
+<<<<<<< HEAD
 llama_index
+=======
+llama-index
+>>>>>>> 42a051c82bd278c64596532ea85aeb112fab3cae
 google-api-python-client
 youtube-transcript-api
 llama_index
@@ -12,4 +16,9 @@ requests
 redis
 fastapi_cache
 cache-manager
+<<<<<<< HEAD
 annoy
+=======
+annoy
+pymongo
+>>>>>>> 42a051c82bd278c64596532ea85aeb112fab3cae
