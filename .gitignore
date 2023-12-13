@@ -14,4 +14,4 @@ venv3
 venv4
 openai_key.json
 ./youtube_summary/venv2
-./youtube_summary/openai_api.env
+./youtube_summary/openai_api.env 

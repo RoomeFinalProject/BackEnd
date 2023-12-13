@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roomae - 채널 및 동영상 정보</title>
+</head>
+<body>
+    <h1>Roomae - 채널 및 동영상 정보</h1>
+
+    <ul>
+        {% for channel in channels %}
+            <li>
+                <p>유튜버명: {{ channel['channel_name'] }}</p>
+                <p>영상 타이틀: {{ channel['video_title'] }}</p>
+                <p>자막 요약: {{ channel.get('summary', 'N/A') }}</p>
+            </li>
+            <hr>
+        {% endfor %}
+    </ul>
+</body>
+</html>
