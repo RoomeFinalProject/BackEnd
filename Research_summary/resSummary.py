@@ -5,7 +5,7 @@ from Loading import file_names
 
 def summary_list(file_names):
     summary_list = []
-    company_name = "Yuanta Securities" 
+    company_name = "유안타 증권" 
     title_value = "AAA" 
     for file_name in file_names:
         content = doc_summary_index.get_document_summary(f"{file_name}")

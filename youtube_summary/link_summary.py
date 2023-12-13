@@ -31,7 +31,6 @@ app.add_middleware(
 env_path = 'openai_api.env'   # Change the Path
 # env_path = '/Users/user/Desktop/FinalProject/youtube_summarizer_fastapi/openai_api.env'
 
-
 # Load the OpenAI API key from the .env file
 load_dotenv(env_path)
 openai.api_key = os.getenv('OPENAI_API_KEY')
@@ -76,7 +75,6 @@ async def summarize_with_langchain_and_openai(transcript, language_code, model_n
 
     # Start summarizing using OpenAI
     client = OpenAI()
-    
     response = client.chat.completions.create(
         model=model_name,
         messages=[
@@ -84,7 +82,9 @@ async def summarize_with_langchain_and_openai(transcript, language_code, model_n
             {'role': 'user', 'content': prompt}
         ],
         temperature=1
+    
     )
+    
     return response.choices[0].message.content
 
 # @app.get("/linkedVideo", response_class=JSONResponse)
@@ -129,17 +129,16 @@ async def linked_video(request: Request, link: str):
         progress = 25
 
         # Getting both the transcript and language_code
+        
         transcript, language_code = get_transcript(link)
-
         status_text = '요약본 생성 중...'
         progress = 75
 
         model_name = 'gpt-3.5-turbo'
         summary = await summarize_with_langchain_and_openai(transcript, language_code, model_name)
-
+        print(summary)
         status_text = '요약:'
         progress = 100
-        print(summary)
         
         return JSONResponse(content={"summary": summary})
     except Exception as e:

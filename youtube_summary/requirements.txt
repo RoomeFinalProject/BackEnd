@@ -11,4 +11,6 @@ requests
 redis
 fastapi_cache
 cache-manager
-uvicorn
+pypdf
+dotenv
+python-multipart

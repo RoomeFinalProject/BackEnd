@@ -49,7 +49,7 @@ templates = Jinja2Templates(directory=os.path.join(script_directory, "templates"
 
 
 # 2. OpenAI API 키 로드, 객체 생성
-openai_api_key_path = os.path.join(script_directory, '..', 'openai_key.json').replace('\\', '/')
+openai_api_key_path = os.path.join(script_directory, '..', 'api_key.json').replace('\\', '/')
 
 try:
     with open(openai_api_key_path, 'r') as file:
@@ -61,8 +61,8 @@ except Exception as e:
     print(f"OpenAI API 키를 로드하는 중 오류 발생: {e}")
         
 # 3. API 키와 서비스 계정 파일 등의 설정
-youtube_api_key = os.path.join(script_directory, '..', 'real_youtube_api_key.json').replace('\\', '/') # fastapi_summary 상위 폴더의 키를 참조
-service_account_file = os.path.join(script_directory, '..', 'youtube_api_key.json').replace('\\', '/')
+youtube_api_key = os.path.join(script_directory, '..', 'api_key.json').replace('\\', '/') # fastapi_summary 상위 폴더의 키를 참조
+service_account_file = os.path.join(script_directory, '..', 'api_key.json').replace('\\', '/')
 
 # YouTube API 빌드
 youtube = build("youtube", "v3", credentials=service_account.Credentials.from_service_account_file(service_account_file))
