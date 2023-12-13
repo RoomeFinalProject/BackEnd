@@ -15,7 +15,9 @@ import numpy as np
 import uvicorn
 from fastapi.responses import JSONResponse
 from Loading import file_names
-from PromptandSum import summary_list
+from resSummary import summary_list
+from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 
 
 
@@ -127,6 +129,19 @@ def get_qa_by_GPT(prompt):
 # 1. 앱생성
 app = FastAPI()
 app.mount("/imgs", StaticFiles(directory="imgs"), name='images')
+# Set up CORS
+origins = [
+    "http://localhost:3000",  # Adjust the frontend URL as needed
+    # Add other frontend origins as needed
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # /chat
 @app.post('/chat')
@@ -142,8 +157,9 @@ print("hi")
 # 라우팅
 @app.get('/')
 async def get_last_research():
-    json_responses = summary_list(file_names)
-    return json_responses
+    summary_text = summary_list(file_names)
+    print("summary_text", summary_text )
+    return JSONResponse(content=summary_text)
 
 # /echo
 @app.get('/echo') # 라우팅, get방식

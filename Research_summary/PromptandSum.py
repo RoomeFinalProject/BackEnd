@@ -13,6 +13,7 @@ from Loading import file_names, finance_docs
 from JSONFormat import convert_to_jsonformat
 from llama_index.prompts import PromptTemplate
 
+
 # 1. Key값 설정
 os.environ["OPENAI_API_KEY"] = get_openai_key()
 os.environ["PINECONE_ENV"] = get_pinecone_env()
@@ -55,10 +56,13 @@ doc_summary_index = DocumentSummaryIndex.from_documents(
 
 if __name__ == "__main__":
     summary_list = []
+    company_name = "Yuanta Securities" 
+    title_value = "AAA" 
     for file_name in file_names:
         content = doc_summary_index.get_document_summary(f"{file_name}")
-        json_result = convert_to_jsonformat(file_name, content)
+        json_result = {"company": company_name, "title": title_value, "content": content}
         summary_list.append(json_result)
-    
     print(summary_list)
-  
+
+# json_result = convert_to_jsonformat(file_name, content)
+# summary_list.append(json_result)

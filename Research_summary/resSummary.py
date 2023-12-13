@@ -5,10 +5,13 @@ from Loading import file_names
 
 def summary_list(file_names):
     summary_list = []
+    company_name = "Yuanta Securities" 
+    title_value = "AAA" 
     for file_name in file_names:
         content = doc_summary_index.get_document_summary(f"{file_name}")
-        json_result = convert_to_jsonformat(file_name, content)
+        json_result = {"company": company_name, "title": title_value, "content": content}
         summary_list.append(json_result)
+    print(summary_list)
     return summary_list
 
 if __name__ == 'main':

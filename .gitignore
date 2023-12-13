@@ -1,12 +1,15 @@
-<<<<<<< HEAD
 venv_chatbot
 data
 Prev
 access_key.json
 Chatbot/access_key.json
 Chatbot/test.py
-=======
 base_summary
-venv2
 openai_api.env
->>>>>>> b88e9816b51cefa7dc578257dcc09d4b2444ef99
+openai_key.json
+venv
+venv_finance
+venv2
+venv3
+venv4
+openai_key.json
