@@ -75,9 +75,9 @@ def docs2nodes(documents, llm, chunk_size = 512, chunk_overlap = 128):
 
 if __name__ == "__main__":
     current_directory = os.path.dirname(os.path.abspath(__file__))
-    full_path = os.path.join(current_directory, '..', 'data', 'testdata')
+    full_path = os.path.join(current_directory, '..', 'data', 'Research_daily')
     documents = data_loader(full_path)
-    documents_nodes = docs2nodes (documents, llm)
+    documents_nodes = docs2nodes(documents, llm)
     #print(documents_nodes)
     print(len(documents_nodes))
     print('===========================================================')
