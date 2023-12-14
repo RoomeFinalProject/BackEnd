@@ -1,7 +1,7 @@
 # 기본 설정, 모듈 가져오기, openai API KEY 세팅 -> 코드에 세팅 (리소스로 빼도 되고) -> GIT에 올리는 것 주의
 # AWS의 lambda로 가면 환경변수로 세팅
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, APIRouter
 from fastapi.staticfiles import StaticFiles # 정적 디렉토리 (js, css, 리소스(이미지 등등)) 지정
 import json
 from openai import OpenAI
@@ -10,7 +10,9 @@ import threading                # 동시에 여러 작업을 가능케 하는 �
 import time                     # 답변 시간 계산용, 제한 시간 체크해서 사용
 import queue as q               # 자료구조, 큐, 요청을 차곡차곡 쌓아서 하나씩 꺼내서 처리
 import urllib.request as req
-from chatbot import my_chatbot
+from .chatbot import my_chatbot
+
+
 
 # def get_openai_key():
 #     try:
@@ -125,8 +127,9 @@ def get_img_by_dalle(prompt):
     return response.data[0].url, response.date[0].revised_prompt
     
 # 요청/응답 처리 메인 ----------------------------------------------
-app = FastAPI()
-app.mount("/imgs", StaticFiles(directory="imgs"), name='images')
+# app = FastAPI()
+# app.mount("/imgs", StaticFiles(directory="imgs"), name='images')
+router = APIRouter()
 
 
 # 카톡의 모든 메세지는 이 url을 타고 전송된다 -> 이 안에서 분기
@@ -136,22 +139,22 @@ app.mount("/imgs", StaticFiles(directory="imgs"), name='images')
 # -> 결과를 요청 (GPT X, 결과가 덤프 되었으면 전송, 아니면 다시 대기))
 
 # /chat
-@app.post('/chat')
+@router.post('/chat')
 async def chat(request:Request):
     # post로 전송한 데이터 획득 : http 관점 (기반 TCP/IP) => 헤더 전송 이후 바디 전송
     kakao_message = await request.json() # 클라이언트 (카카오톡에서 json 형태로 전송)의 메시지
     print('chat', kakao_message)
     return main_chat_proc(kakao_message, request)
 
-# 라우팅
-@app.get('/')
-def home():
-    return {'message':'home page'}
+# # 라우팅
+# @router.get('/home')
+# def home():
+#     return {'message':'home page'}
 
-# /echo
-@app.get('/echo') # 라우팅, get 방식
-def echo():
-    return {'message':'home page'}
+# # /echo
+# @app.get('/echo') # 라우팅, get 방식
+# def echo():
+#     return {'message':'home page'}
 
 # 카톡에서 발송되는 메시지별로 분기 처리 (비동기, 쓰레드) 
 

@@ -1,7 +1,7 @@
-from JSONFormat import convert_to_jsonformat
+from .JSONFormat import convert_to_jsonformat
 from llama_index.indices.document_summary import DocumentSummaryIndex
-from PromptandSum import doc_summary_index
-from Loading import file_names
+from .PromptandSum import doc_summary_index
+from .Loading import file_names
 
 def summary_list(file_names):
     summary_list = []

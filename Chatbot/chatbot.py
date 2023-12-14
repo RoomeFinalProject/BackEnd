@@ -1,5 +1,5 @@
 import time
-from QueryingandPrompt import query_engine
+from .QueryingandPrompt import query_engine
 
 
 def my_chatbot(text_input):

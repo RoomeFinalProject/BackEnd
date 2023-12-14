@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, HTTPException
+from fastapi import FastAPI, Request, HTTPException, APIRouter
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 import requests
@@ -50,6 +50,7 @@ templates = Jinja2Templates(directory=os.path.join(script_directory, "templates"
 
 # 2. OpenAI API 키 로드, 객체 생성
 openai_api_key_path = os.path.join(script_directory, '..', 'api_key.json').replace('\\', '/')
+print("test")
 
 try:
     with open(openai_api_key_path, 'r') as file:
@@ -89,7 +90,9 @@ channel_mapping = {
 #     "UCVAbB2v_MCpAWNVTGxVLRxw": "안정모의 주식투자",
 
 # 5. FastAPI 애플리케이션 초기화 및 경로 정의
-app = FastAPI()
+# app = FastAPI()
+# Create routing method
+router = APIRouter()
 
 # Set up CORS
 origins = [
@@ -97,13 +100,13 @@ origins = [
     # Add other frontend origins as needed
 ]
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=origins,
+#     allow_credentials=True,
+#     allow_methods=["*"],
+#     allow_headers=["*"],
+# )
 
 # 6. 문서 불러오기
 def load_video_data(channel_id):
@@ -191,7 +194,8 @@ def get_video_info(channel_id, channel_name, num_videos=1):
     return all_video_data
 
 # 9.FastAPI 라우트 (경로정의)
-@app.get("/youtube")
+
+@router.get("/youtube")
 async def get_latest_video():
     all_video_data = []
     for channel_id, channel_name in channel_mapping.items():
@@ -201,6 +205,6 @@ async def get_latest_video():
 
     return JSONResponse(content=all_video_data)
 
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="127.0.0.1", port=8000, reload=True)
+# if __name__ == "__main__":
+#     import uvicorn
+#     uvicorn.run(app, host="127.0.0.1", port=8000, reload=True)

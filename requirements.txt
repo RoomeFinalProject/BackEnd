@@ -12,7 +12,8 @@ redis
 fastapi_cache
 cache-manager
 pypdf
-
+axios
+python-dotenv
 
 aiohttp==3.9.1
 aiosignal==1.3.1

@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Form, Depends, Request
+from fastapi import FastAPI, HTTPException, Form, Depends, Request, APIRouter
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from youtube_transcript_api import YouTubeTranscriptApi
@@ -11,7 +11,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from openai import OpenAI
 
 
-app = FastAPI()
+# app = FastAPI()
+router = APIRouter()
 
 # Set up CORS
 origins = [
@@ -19,13 +20,13 @@ origins = [
     # Add other frontend origins as needed
 ]
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=origins,
+#     allow_credentials=True,
+#     allow_methods=["*"],
+#     allow_headers=["*"],
+# )
 
 # Specify the path to your .env file
 env_path = 'openai_api.env'   # Change the Path
@@ -119,7 +120,7 @@ async def summarize_with_langchain_and_openai(transcript, language_code, model_n
 
 
 # 9.FastAPI 라우트 (경로정의)
-@app.get("/linkedVideo")
+@router.get("/linkedVideo")
 async def linked_video(request: Request, link: str):
     try:
         progress = 0

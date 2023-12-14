@@ -2,7 +2,7 @@
 # Git에 올리는 것은 주의 (KEY 때문에)
 
 # AWS의 lambda로 가면 환경변수로 세팅
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, APIRouter
 from fastapi.staticfiles import StaticFiles  # 정적 디렉토리(js, css, 리소스(이미지등등)) 지정
 import json
 from openai import OpenAI
@@ -14,8 +14,8 @@ import urllib.request as req
 import numpy as np
 import uvicorn
 from fastapi.responses import JSONResponse
-from Loading import file_names
-from resSummary import summary_list
+from .Loading import file_names
+from .resSummary import summary_list
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -127,44 +127,44 @@ def get_qa_by_GPT(prompt):
 
 #4. 요청 / 응답 처리 메인 ---------------------------------------------------
 # 1. 앱생성
-app = FastAPI()
-app.mount("/imgs", StaticFiles(directory="imgs"), name='images')
+router = APIRouter()
+# app = FastAPI()
+# app.mount("/imgs", StaticFiles(directory="imgs"), name='images')
 # Set up CORS
-origins = [
-    "http://localhost:3000",  # Adjust the frontend URL as needed
-    # Add other frontend origins as needed
-]
+# origins = [
+#     "http://localhost:3000",  # Adjust the frontend URL as needed
+#     # Add other frontend origins as needed
+# ]
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=origins,
+#     allow_credentials=True,
+#     allow_methods=["*"],
+#     allow_headers=["*"],
+# )
 
 # /chat
-@app.post('/chat')
-async def chat(request:Request):
-    # post로 전송한 데이터 획득 : http 관점(기반 TCP/IP)=> 헤더전송 이후 바디가 전송
-    # 클라이언트(카카오톡에서 json 형태로 전송)의 메세지
-    # request로 받아오고 다시 클라이언트에게 전송
-    kakao_message = await request.json()
-    print('chat:', kakao_message)
-    return main_chat_proc( kakao_message, request)
+# @app.post('/chat')
+# async def chat(request:Request):
+#     # post로 전송한 데이터 획득 : http 관점(기반 TCP/IP)=> 헤더전송 이후 바디가 전송
+#     # 클라이언트(카카오톡에서 json 형태로 전송)의 메세지
+#     # request로 받아오고 다시 클라이언트에게 전송
+#     kakao_message = await request.json()
+#     print('chat:', kakao_message)
+#     return main_chat_proc( kakao_message, request)
 
-print("hi")
 # 라우팅
-@app.get('/')
+@router.get('/research')
 async def get_last_research():
     summary_text = summary_list(file_names)
     print("summary_text", summary_text )
     return JSONResponse(content=summary_text)
 
 # /echo
-@app.get('/echo') # 라우팅, get방식
-def echo():
-    return { 'message' : 'echo page'}
+# @app.get('/echo') # 라우팅, get방식
+# def echo():
+#     return { 'message' : 'echo page'}
 
 
 # 카톡에서 발송되는 메시지별로 분기 처리(비동기, 쓰레드) ------------------------------
