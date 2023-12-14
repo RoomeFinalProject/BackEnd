@@ -1,0 +1,16 @@
+# pip install -r requirements.txt
+OpenAI
+llama-index
+google-api-python-client
+youtube-transcript-api
+langchain
+sentence_transformers
+fastapi
+uvicorn
+requests
+redis
+fastapi_cache
+cache-manager
+pypdf
+dotenv
+python-multipart

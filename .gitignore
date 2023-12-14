@@ -1,1 +1,20 @@
-# key 들은 들어가면 안되지?
+venv_chatbot
+data
+Prev
+access_key.json
+Chatbot/access_key.json
+Chatbot/test.py
+base_summary
+openai_api.env
+openai_key.json
+venv
+venv_finance
+venv2
+venv3
+venv4
+openai_key.json
+api_key.json
+real_youtube_api_key.json
+youtube_api_key.json
+./youtube_summary/venv2
+./youtube_summary/openai_api.env 
