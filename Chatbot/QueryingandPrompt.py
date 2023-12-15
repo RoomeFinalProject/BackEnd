@@ -39,7 +39,7 @@ retriever = VectorIndexRetriever(
 )
 
 ## 3.2 Configuring node postprocessors
-node_postprocessors = [SimilarityPostprocessor(similarity_cutoff=0.6)]
+node_postprocessors = [SimilarityPostprocessor(similarity_cutoff=0.3)]
 
 ## 3.3 configure response synthesizer
 #response_synthesizer = get_response_synthesizer(response_mode="tree_summarize",) #(streaming = True, response_mode="tree_summarize",)
@@ -104,14 +104,6 @@ if __name__ == "__main__":
             print('selected_node :', selected_node)
             print('similarity_score :', similarity_score)
             print("===============================================================")
-            
-    
-        
-            
-            
-           
-    
-    
     # 참고링크: https://docs.llamaindex.ai/en/stable/examples/query_engine/custom_query_engine.html
         
         
