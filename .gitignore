@@ -6,3 +6,16 @@ Chatbot/test.py
 base_summary
 venv2
 openai_api.env
+openai_key.json
+venv
+venv_finance
+venv2
+venv3
+venv4
+openai_key.json
+api_key.json
+real_youtube_api_key.json
+youtube_api_key.json
+./youtube_summary/venv2
+./youtube_summary/openai_api.env 
+venv_finance
