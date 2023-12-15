@@ -119,7 +119,7 @@ while True:
     
 print(pdf_file_url)
 # Save the DataFrame to a JSON file
-with open('TopRank_file_urls.json', 'w', encoding='utf-8') as json_file:
+with open(f'TopRank_file_urls_{today_date_str}.json', 'w', encoding='utf-8') as json_file:
     json.dump(pdf_file_url, json_file, ensure_ascii=False)
 
 

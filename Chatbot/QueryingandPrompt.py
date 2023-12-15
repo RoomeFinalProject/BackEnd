@@ -64,8 +64,11 @@ qa_prompt_tmpl_str = (
     "---------------------\n"
     "{context_str}\n"
     "---------------------\n"
-    "Given the context information and not prior knowledge, "
-    "answer the query in the style of a Shakespeare play.\n"
+    "You are finance expert"
+    "Given the context information and not prior knowledge\n"
+    "한국말로만 대답해주세요"
+    "Answer example: {2024년 이차전지 주가는 예측은 약 3.5%상승 될 것이며, 글로벌 증시의 경우 약 -75pb 하락할 것으로 예상됩니다.}"
+    
     "Query: {query_str}\n"
     "Answer: "
 )

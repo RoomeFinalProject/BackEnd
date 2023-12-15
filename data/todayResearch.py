@@ -96,7 +96,8 @@ while True:
 
 print(pdf_file_url)
 # Save the DataFrame to a JSON file
-with open(f'FileURLJson/todayResearch_file_urls_{today_date_str}.json', 'w', encoding='utf-8') as json_file:
+    # 저장 경로 바꾸기
+with open(f'Research_daily/ResearchTop_file_urls_{today_date_str}.json', 'w', encoding='utf-8') as json_file:
     json.dump(pdf_file_url, json_file, ensure_ascii=False)
 
 driver.quit()

@@ -20,12 +20,12 @@ os.environ["PINECONE_API_KEY"] = get_pinecone_key()
 
 # 2. Nodes 만들기
 current_directory = os.path.dirname(os.path.abspath(__file__))
-path = os.path.join(current_directory, '..', 'data', 'Research_daily','20231206')
+path = os.path.join(current_directory, '..', 'data', 'Chatbot_db_text')
 #path = os.path.join(current_directory, '..', 'data', 'Research_daily','20231207')
 #path = os.path.join(current_directory, '..', 'data', 'Research_daily','20231213')
 llm = OpenAI(temperature=0, model="gpt-3.5-turbo")
 documents = data_loader(path)
-documents_nodes = docs2nodes (documents, llm)
+documents_nodes = docs2nodes(documents, llm, chunk_size = 341, chunk_overlap = 86)
 
 
 # 3. 라마가 가져올 storage Index 설정: 여기서는 pinceone의 index 'openai'로 설정.
