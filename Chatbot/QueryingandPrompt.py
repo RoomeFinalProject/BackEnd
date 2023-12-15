@@ -65,7 +65,8 @@ qa_prompt_tmpl_str = (
     "{context_str}\n"
     "---------------------\n"
     "Given the context information and not prior knowledge, "
-    "answer the query in the style of a Shakespeare play.\n"
+    "Answer only Korean"
+    "\n"
     "Query: {query_str}\n"
     "Answer: "
 )
