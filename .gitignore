@@ -22,3 +22,8 @@ youtube_api_key.json
 ./youtube_summary/openai_api.env 
 venv_finance
 openai_api.env
+api_key.json
+./youtube_summary/venv2
+./youtube_summary/openai_api.env 
+base_summary
+text_data

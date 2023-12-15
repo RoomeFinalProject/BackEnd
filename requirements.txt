@@ -11,11 +11,12 @@ requests
 redis
 fastapi_cache
 cache-manager
+annoy
+pymongo
 pypdf
 axios
 python-dotenv
-pymongo
-
+feedparser
 aiohttp==3.9.1
 aiosignal==1.3.1
 aiostream==0.5.2
