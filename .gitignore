@@ -18,3 +18,4 @@ real_youtube_api_key.json
 youtube_api_key.json
 ./youtube_summary/venv2
 ./youtube_summary/openai_api.env 
+venv_finance

@@ -15,14 +15,21 @@ from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.embeddings import OpenAIEmbeddings
 from llama_index.embeddings.langchain import LangchainEmbedding
 from pathlib import Path
+from pymongo import MongoClient
 import redis
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+import re
+import html
 
 
 
 # 레디스 클라이언트 생성: 연결 설정
 redis_client = redis.StrictRedis(host='localhost', port=6379, db=0)
+
+mongo_client = MongoClient('mongodb://localhost:27017/')                                                # MongoDB 연결 정보
+db = mongo_client['youtube_summary_db']
+collection = db['summary']
 
 # 현재 스크립트 디렉토리 경로
 script_directory = os.path.dirname(os.path.abspath(__file__))
@@ -73,10 +80,10 @@ channel_mapping = {
     "UCr7XsrSrvAn_WcU4kF99bbQ": "박곰희TV",
     "UCWBb2cJKOIRUSI_rgndkgWw": "주주톡",
     "UCv-spDeZBGYVUI9eGXGaLSg": "시윤주식",
-    # "UCWeYU4snOLj4Jj52Q9VCcOg": "주식하는강이사",
-    # "UCpqD9_OJNtF6suPpi6mOQCQ": "월가아재의 과학적 투자",
-    # "UCHWFdDG50K-k8btmLG_2Lcg": "어니스트와 주식 빌드업",
-    # "UCO8tX-tvkJmN70sALNmXhCg": "친절한 재승씨",
+    "UCWeYU4snOLj4Jj52Q9VCcOg": "주식하는강이사",
+    "UCpqD9_OJNtF6suPpi6mOQCQ": "월가아재의 과학적 투자",
+    "UCHWFdDG50K-k8btmLG_2Lcg": "어니스트와 주식 빌드업",
+    "UCO8tX-tvkJmN70sALNmXhCg": "친절한 재승씨",
 }
 
 
@@ -108,7 +115,7 @@ origins = [
 #     allow_headers=["*"],
 # )
 
-# 6. 문서 불러오기
+# 6. 데이터 불러오기
 def load_video_data(channel_id):
     redis_key = f"{channel_id}"
     loaded_data = redis_client.get(redis_key)
@@ -117,77 +124,88 @@ def load_video_data(channel_id):
         loaded_data = loaded_data.decode('utf-8')
         video_title, korean_transcript = loaded_data.split("\n", 1)
         print("데이터를 Redis에서 로드했습니다.")
-        
     else:
         response_items = []
-
-        try:
+        try:    # 채널별로 최신영상 1개(maxResults=1)의 데이터를 가져온다 / eventType='completed', type='video' 실시간 스트리밍 방송이나 예약인 영상은 제외
             response = youtube.search().list(part="id, snippet", channelId=channel_id, order="date", maxResults=1).execute()
-            # YouTube API 호출에 대한 응답 확인
+            print(response)
             if "items" not in response:
                 raise Exception("No video items in the YouTube API response")
             response_items = response.get("items", [])
         except Exception as e:
-            print(f"Error during YouTube API request: {e}")
-            # 발생한 예외에 대한 추가 디버깅을 위해 예외를 출력합니다.
+            print(f"API 호출 중 오류가 발생했습니다: {e}")
             raise
-
         if response_items:
             first_item = response_items[0]
             video_id = first_item.get("id", {}).get("videoId")
             video_title = first_item.get("snippet", {}).get("title", "")
+            video_title = html.unescape(video_title)                                                    # HTML 엔터티 변환
+            video_title = re.sub(r'[^\w\s\n]', '', video_title)                                         # 특수문자 및 이모지 제거
+            channel_name = first_item.get("snippet", {}).get("channelTitle", "")
             try:
                 transcript = YouTubeTranscriptApi.get_transcript(video_id, languages=["ko"])
                 if not transcript:
-                    raise YouTubeTranscriptApi.CouldNotRetrieveTranscript("자막이 없습니다.")
+                    raise Exception("자막이 없습니다.")
+                pattern = re.compile(r'\[음악\]|\[박수\]|여러분|환영합니다|하신분들|이제|다시|좀')      # 자막에 포함된 [음악]과 [박수] 부분을 삭제하는 정규표현식 패턴
                 korean_transcript = " ".join(entry["text"] for entry in transcript)
-                video_title = first_item.get("snippet", {}).get("title", "")
+                korean_transcript = pattern.sub('', korean_transcript)                                  # pattern으로 지정해둔 부분을 자막에서 삭제
+                # save_path = os.path.join("text_data", f"{channel_name}_{video_id}_transcript.txt")      # 텍스트 데이터를 txt 파일로 저장
+                # with open(save_path, "w", encoding="utf-8") as file:
+                #     file.write(korean_transcript)
+                # print(f"데이터를 파일로 저장했습니다. 경로: {save_path}")
             except Exception as e:
                 print(f"자막을 검색하는 동안 오류가 발생했습니다: {e}")
-                raise HTTPException(status_code=500, detail=f"자막 검색 중 오류 발생: {e}")
-            redis_client.set(redis_key, f"{video_title}\n{korean_transcript}") # 레디스에 저장
-            print("redis에 저장하였습니다.")
+                raise HTTPException(status_code=500, detail=f"자막 검색 중 오류 발생: {e}")    
+            redis_client.set(redis_key, f"{video_title}\n{korean_transcript}" , ex=86400)                          # Redis에 데이터 저장
+            print("데이터를 Redis에 저장했습니다.")
         else:
             print("API 응답에 비디오 아이템이 없습니다. API 응답을 확인하세요.")
     return video_title, korean_transcript
 
 # 7. 문서 요약 함수
-def summarize_documents(documents, embed_model):
+def summarize_documents(channel_name, video_title, korean_transcript, embed_model):
     summary = ""
-    if not documents:
-        return summary  # 빈 documents에 대한 처리
-    # 하나의 요약만 생성
-    selected_index = GPTVectorStoreIndex.from_documents(documents, service_context=ServiceContext.from_defaults(embed_model=embed_model))
-    result = selected_index.as_query_engine().query('텍스트의 내용을 Summarize the following in 10 bullet points.')
-    print(f"문서 요약:\n{result}\n")
-    summary = str(result)
+    existing_summary = collection.find_one({"channel_name": channel_name, "video_title": video_title})  # MongoDB에서 자막요약 정보 조회
+
+    if existing_summary:
+        print("기존에 저장된 자막 요약을 사용합니다.")
+        summary = existing_summary["summary"]
+    else:
+        documents = load_documents_from_text(korean_transcript)
+        if documents:
+            selected_index = GPTVectorStoreIndex.from_documents(documents, service_context=ServiceContext.from_defaults(embed_model=embed_model))
+            result = selected_index.as_query_engine().query('텍스트의 내용을 Summarize the following in 10 bullet points.')
+            print(f"문서 요약:\n{result}\n")
+            summary = str(result)
+            collection.update_one(                                                                      # MongoDB에 자막 요약 정보 저장
+                {"channel_name": channel_name, "video_title": video_title},                             # collection.update_one: 문서가 있을 경우 덮어쓰기
+                {"$set": {"summary": summary, "transcript": korean_transcript}},                        
+                upsert=True                                                                             # upsert 문서가 없는 경우 새로운 문서를 추가
+            )
+            print("자막 요약을 MongoDB에 저장했습니다.")
+        else:
+            print("자막이 존재하지 않아 요약을 수행할 수 없습니다.")
     return summary
 
 # 8. 모델 색인화 과정( 모델명: 다국어로 훈련된 언어 모델 XLM-RoBERTa )
-def get_video_info(channel_id, channel_name, num_videos=1):
+def get_video_info(channel_id, channel_name):
     all_video_data = []  # 특정 채널의 동영상 정보 저장
     try:
-        for _ in range(num_videos):
-            
-            video_title, korean_transcript = load_video_data(channel_id) # 함수를 호출하여 Redis 캐시 또는 YouTube API에서 동영상의 제목과 한국어 대본을 가져옵니다.
-            
-            if video_title is not None and korean_transcript is not None:
+        video_title, korean_transcript = load_video_data(channel_id)
 
-                documents = load_documents_from_text(korean_transcript)
-                # 임베딩 모델 초기화
-                embed_model = LangchainEmbedding(HuggingFaceEmbeddings(
-                    model_name='sentence-transformers/xlm-r-100langs-bert-base-nli-stsb-mean-tokens'
-                ))
-                #  문서 요약 생성
-                summary = summarize_documents(documents, embed_model)
-
-                # 딕셔너리 생성
-                video_info = {
-                    "channel_name": channel_name,
-                    "video_title": video_title,
-                    "summary": summary,
-                }
-                all_video_data.append(video_info)
+        # 임베딩 모델 초기화
+        embed_model = LangchainEmbedding(HuggingFaceEmbeddings(
+            model_name='sentence-transformers/xlm-r-100langs-bert-base-nli-stsb-mean-tokens'
+        ))
+        # 문서 요약 생성
+        summary = summarize_documents(channel_name, video_title, korean_transcript, embed_model)        
+        # 딕셔너리 생성
+        video_info = {
+            "channel_name": channel_name,
+            "video_title": video_title,
+            "summary": summary,
+        }
+        all_video_data.append(video_info)
     except Exception as e:
         print(f"오류가 발생했습니다: {e}")
         raise HTTPException(status_code=500, detail="오류가 발생했습니다.")

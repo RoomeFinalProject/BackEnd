@@ -71,6 +71,8 @@ async def get_last_research():
     print("summary_text", summary_text )
     return JSONResponse(content=summary_text)
 
+
+
 # ----------------------------------------------------------------------------
 # chatbot --------------------------------------------------------------------
 @app.post("/chat")

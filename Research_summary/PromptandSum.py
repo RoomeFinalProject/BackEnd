@@ -54,15 +54,15 @@ doc_summary_index = DocumentSummaryIndex.from_documents(
     show_progress=True,
 )
 
-if __name__ == "__main__":
-    summary_list = []
-    company_name = "Yuanta Securities" 
-    title_value = "AAA" 
-    for file_name in file_names:
-        content = doc_summary_index.get_document_summary(f"{file_name}")
-        json_result = {"company": company_name, "title": title_value, "content": content}
-        summary_list.append(json_result)
-    print(summary_list)
+# if __name__ == "__main__":
+#     summary_list = []
+#     company_name = "Yuanta Securities" 
+#     title_value = "AAA" 
+#     for file_name in file_names:
+#         content = doc_summary_index.get_document_summary(f"{file_name}")
+#         json_result = {"company": company_name, "title": title_value, "content": content}
+#         summary_list.append(json_result)
+#     print(summary_list)
 
 # json_result = convert_to_jsonformat(file_name, content)
 # summary_list.append(json_result)
