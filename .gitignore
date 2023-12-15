@@ -1,4 +1,6 @@
+
 venv_chatbot
+venv_finance
 data
 Prev
 access_key.json
@@ -19,3 +21,4 @@ youtube_api_key.json
 ./youtube_summary/venv2
 ./youtube_summary/openai_api.env 
 venv_finance
+openai_api.env

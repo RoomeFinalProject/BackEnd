@@ -20,7 +20,9 @@ os.environ["PINECONE_API_KEY"] = get_pinecone_key()
 
 # 2. Nodes 만들기
 current_directory = os.path.dirname(os.path.abspath(__file__))
-path = os.path.join(current_directory, '..', 'data', 'testdata')
+path = os.path.join(current_directory, '..', 'data', 'Research_daily','20231206')
+#path = os.path.join(current_directory, '..', 'data', 'Research_daily','20231207')
+#path = os.path.join(current_directory, '..', 'data', 'Research_daily','20231213')
 llm = OpenAI(temperature=0, model="gpt-3.5-turbo")
 documents = data_loader(path)
 documents_nodes = docs2nodes (documents, llm)

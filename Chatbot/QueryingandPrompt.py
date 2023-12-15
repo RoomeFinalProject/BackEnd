@@ -35,15 +35,15 @@ index = VectorStoreIndex.from_vector_store(vector_store)
 ## 3.1 configure retriever
 retriever = VectorIndexRetriever(
     index=index,
-    similarity_top_k=10,
+    similarity_top_k=3,
 )
 
 ## 3.2 Configuring node postprocessors
-node_postprocessors = [SimilarityPostprocessor(similarity_cutoff=0.2)]
+node_postprocessors = [SimilarityPostprocessor(similarity_cutoff=0.3)]
 
 ## 3.3 configure response synthesizer
 #response_synthesizer = get_response_synthesizer(response_mode="tree_summarize",) #(streaming = True, response_mode="tree_summarize",)
-response_synthesizer = get_response_synthesizer(response_mode="compact",) #(streaming = True, response_mode="tree_summarize",)
+response_synthesizer = get_response_synthesizer(response_mode="tree_summarize",) #(streaming = True, response_mode="tree_summarize",)
   #synth = get_response_synthesizer(text_qa_template=custom_qa_prompt, refine_template=custom_refine_prompt)
   # 이 함수를 사용하면 쉽게 prompt engineering을 할 수 있다.
   # 지금 streaming 기능이 작동하지 않음.
@@ -65,7 +65,7 @@ qa_prompt_tmpl_str = (
     "{context_str}\n"
     "---------------------\n"
     "Given the context information and not prior knowledge, "
-    "answer the query in the style of a Shakespeare play and only in Korean.\n"
+    "answer the query in the style of a Shakespeare play.\n"
     "Query: {query_str}\n"
     "Answer: "
 )
@@ -78,15 +78,33 @@ query_engine.update_prompts(
 
 if __name__ == "__main__":
     # 5. chat
-    while True:
-        text_input = input("User: ")
-        if text_input.lower() == "exit":
-            break
-        start_time = time.time()
-        response = query_engine.query(text_input)
-        response_time = time.time() - start_time
+    text_input = "코리안리 2024년 전망에 대해 요약해줘"
+
+    start_time = time.time()
+    response = query_engine.query(text_input)
+    response_time = time.time() - start_time
+    
+    print("Response:", response.response)
+    
+    if response.metadata is None:
+        print('Reference가 없습니다.')
+    else:
+        selected_metadata = [{'page_label': metadata['page_label'], 'file_name': metadata['file_name']} for metadata in response.metadata.values()]
+        print("Metadata:", selected_metadata)
         
-        print("Response Time: {:.2f} seconds".format(response_time))
-        print("Response:", response.response) # print("Response:", response.response) 이렇게 하면 에러 발생 ..
-        print("Metadata:", response.metadata.values())
+    print("Response Time: {:.2f} seconds".format(response_time))
+    print("===============================================================")
+    
+    if response.metadata:
+        for source_node in response.source_nodes:
+            file_name, page_label = source_node.metadata['file_name'], source_node.metadata['page_label']
+            selected_node, similarity_score = source_node.get_content(), source_node.get_score()
+            print('file_name :', file_name)
+            print('page_label :', page_label)
+            print('selected_node :', selected_node)
+            print('similarity_score :', similarity_score)
+            print("===============================================================")
+    # 참고링크: https://docs.llamaindex.ai/en/stable/examples/query_engine/custom_query_engine.html
+        
+        
         

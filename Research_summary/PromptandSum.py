@@ -9,8 +9,13 @@ full_path = os.path.join(current_directory, '..')
 sys.path.append(full_path)
 from access import get_openai_key, get_pinecone_env, get_pinecone_key
 
+<<<<<<< HEAD
 from .Loading import file_names, finance_docs
 from .JSONFormat import convert_to_jsonformat
+=======
+from Loading import file_names, finance_docs
+from JSONFormat import convert_to_jsonfile
+>>>>>>> 1bdbfe3fe34af94a5ef623e1775cca23a0111442
 from llama_index.prompts import PromptTemplate
 
 
@@ -54,6 +59,7 @@ doc_summary_index = DocumentSummaryIndex.from_documents(
     show_progress=True,
 )
 
+<<<<<<< HEAD
 # if __name__ == "__main__":
 #     summary_list = []
 #     company_name = "Yuanta Securities" 
@@ -66,3 +72,16 @@ doc_summary_index = DocumentSummaryIndex.from_documents(
 
 # json_result = convert_to_jsonformat(file_name, content)
 # summary_list.append(json_result)
+=======
+if __name__ == "__main__":
+    #summary_list = []
+    current_directory = os.path.dirname(os.path.abspath(__file__))
+    full_path = os.path.join(current_directory, '..', 'data', 'Results_Summary')
+    for file_name in file_names:
+        content = doc_summary_index.get_document_summary(f"{file_name}")
+        json_result = convert_to_jsonfile(file_name, content, full_path)
+        #summary_list.append(json_result)
+    
+    #print(summary_list)
+  
+>>>>>>> 1bdbfe3fe34af94a5ef623e1775cca23a0111442

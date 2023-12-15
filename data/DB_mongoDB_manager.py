@@ -5,6 +5,11 @@ import datetime
 import json
 import os
 
+'''
+   DB에 파일 저장하는 것 까지만 완료
+'''
+
+
 client = MongoClient("localhost", 27017)
 
 db = client.Research_Summary          
@@ -12,24 +17,38 @@ collection = db.Summary_collection
 posts = db.posts
 
 
-with open("modified_today_jsons.json", 'r', encoding='utf-8') as file:
+with open("modified_today_20231215.json", 'r', encoding='utf-8') as file:
     data = json.load(file)
-
+    
+#print(data)
 def insert_DB(data):
     result = posts.insert_many(data)
     result.inserted_ids
     return print("업데이트가 완료되었습니다.")
 
-matching_documents = posts.find({'document_summary.date': '2023-12-14'})
-
-for document in matching_documents:
-    pprint.pprint(document)
- 
-count = posts.count_documents({'document_summary.date': '2023-12-14'})
-print(count)
 
 
 '''
+
+#insert_DB(data)
+
+#for post in posts.find():
+#    pprint.pprint(post)
+#pprint.pprint(posts.find_one())
+# Find documents where the 'Date' field matches '2023-12-15'
+
+
+matching_documents = posts.find({"title":"12월_리서치센터_종목_Follow-up_20231215_유안타증권.pdf"})
+
+# Print the matching documents
+for document in matching_documents:
+    pprint(document)
+ 
+# count = posts.count_documents({'document_summary.date': '2023-12-15'})
+# print(count)
+
+
+
 # DB에 삽입할 내용
 def Research_Sum_Lis():
     Research_Sum_List = []

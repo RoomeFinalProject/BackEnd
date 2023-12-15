@@ -33,7 +33,7 @@ def create_finance_docs(file_names, directory_path):
     return finance_docs
 
 current_directory = os.path.dirname(os.path.abspath(__file__))
-directory_path = os.path.join(current_directory, '..', 'data', 'testdata')
+directory_path = os.path.join(current_directory, '..', 'data', 'Research_daily','20231215')
 file_names = list_files(directory_path)    
 finance_docs = create_finance_docs(file_names, directory_path)
-print('file_names are finance_docs are created')
+print('file_names and finance_docs are created')
