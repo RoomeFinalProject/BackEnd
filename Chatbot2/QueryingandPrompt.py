@@ -66,10 +66,8 @@ qa_prompt_tmpl_str = (
     "---------------------\n"
     "You are finance expert"
     "Given the context information and not prior knowledge\n"
-    "you have to say '질문을 좀 더 구체적으로 해주세요' instead of 'Empty Response' "
     "한국말로만 대답해주세요"
     "Answer example: {2024년 이차전지 주가는 예측은 약 3.5%상승 될 것이며, 글로벌 증시의 경우 약 -75pb 하락할 것으로 예상됩니다.}"
-    "Answer example: {회사명을 정확히 입력해 주세요}"
     
     "Query: {query_str}\n"
     "Answer: "
@@ -83,7 +81,7 @@ query_engine.update_prompts(
 
 if __name__ == "__main__":
     
-    text_input = "오늘은 슬픈날이다"
+    text_input = "코리안리 목표주가와 주주환원 정책에 관해 설명해줘"
 
     start_time = time.time()
     response = query_engine.query(text_input)

@@ -4,18 +4,16 @@ current_directory = os.path.dirname(os.path.abspath(__file__))
 full_path = os.path.join(current_directory, '..')
 sys.path.append(full_path)
 from access import get_openai_key, get_pinecone_env, get_pinecone_key
-
 import pinecone
-
 from llama_index import VectorStoreIndex, ServiceContext
 from llama_index.vector_stores import PineconeVectorStore
-
 from llama_index import VectorStoreIndex, get_response_synthesizer
 from llama_index.retrievers import VectorIndexRetriever
 from llama_index.query_engine import RetrieverQueryEngine
 from llama_index.postprocessor import SimilarityPostprocessor,KeywordNodePostprocessor
 from llama_index.prompts import PromptTemplate
-
+from llama_index.llms import ChatMessage, MessageRole
+from llama_index.prompts import ChatPromptTemplate
 import time
 
 
@@ -26,30 +24,78 @@ environment = get_pinecone_env()
 os.environ["PINECONE_API_KEY"] = get_pinecone_key()
 pinecone.init(api_key = get_pinecone_key(), environment = get_pinecone_env())
 
+
 # 2. LlammaIndex - Pinecone 연동
 pinecone_index = pinecone.Index("openai")
 vector_store = PineconeVectorStore(pinecone_index=pinecone_index)
 index = VectorStoreIndex.from_vector_store(vector_store)
 
+
 # 3. Querying Stage 조작: configure retriever, Configuring node postprocessors, configure response synthesizer
 ## 3.1 configure retriever
-retriever = VectorIndexRetriever(
-    index=index,
-    similarity_top_k=3,
-)
+retriever = VectorIndexRetriever(index=index, similarity_top_k=3,) # 여기에 필터기능 있는 것 같음
 
 ## 3.2 Configuring node postprocessors
-node_postprocessors = [SimilarityPostprocessor(similarity_cutoff=0.3)]
+node_postprocessors = [SimilarityPostprocessor(similarity_cutoff=0.1)]
+
+
+# Text QA Prompt
+chat_text_qa_msgs = [
+    ChatMessage(
+        role=MessageRole.SYSTEM,
+        content=(
+            "Always answer the question, even if the context isn't helpful.\n"
+            "answer the query in the style of kind friend.\n"
+        ),
+    ),
+    ChatMessage(
+        role=MessageRole.USER,
+        content=(
+            "Context information is below.\n"
+            "---------------------\n"
+            "{context_str}\n"
+            "---------------------\n"
+            "Given the context information and not prior knowledge, "
+            "You must translate English to Korean for your answer.\n"
+            
+            "answer the question: {query_str}\n"
+        ),
+    ),
+]
+text_qa_template = ChatPromptTemplate(chat_text_qa_msgs)
+
+# Refine Prompt
+chat_refine_msgs = [
+    ChatMessage(
+        role=MessageRole.SYSTEM,
+        content=(
+            "Always answer the question, even if the context isn't helpful.\n"
+            "answer the query in the style of kind friend.\n"
+            
+        ),
+    ),
+    ChatMessage(
+        role=MessageRole.USER,
+        content=(
+            "We have the opportunity to refine the original answer "
+            "(only if needed) with some more context below.\n"
+            "------------\n"
+            "{context_msg}\n"
+            "------------\n"
+            "Given the new context, refine the original answer to better "
+            "answer the question: {query_str}. "
+            "If the context isn't useful, output the original answer again.\n"
+            "You must translate English to Korean for your answer.\n"
+            "Original Answer: {existing_answer}"
+        ),
+    ),
+]
+refine_template = ChatPromptTemplate(chat_refine_msgs)
+
 
 ## 3.3 configure response synthesizer
-#response_synthesizer = get_response_synthesizer(response_mode="tree_summarize",) #(streaming = True, response_mode="tree_summarize",)
-response_synthesizer = get_response_synthesizer(response_mode="tree_summarize",) #(streaming = True, response_mode="tree_summarize",)
-  #synth = get_response_synthesizer(text_qa_template=custom_qa_prompt, refine_template=custom_refine_prompt)
-  # 이 함수를 사용하면 쉽게 prompt engineering을 할 수 있다.
-  # 지금 streaming 기능이 작동하지 않음.
-  # streaming = True -> response.response로 응답 할 수 없음
-  # prompts_dict = query_engine.get_prompts() # (response_mode="compact") 일때
-  # print(list(prompts_dict.keys()))
+response_synthesizer = get_response_synthesizer(text_qa_template = text_qa_template, refine_template = refine_template)
+
   
 ## 3.4 assemble query engine
 query_engine = RetrieverQueryEngine(
@@ -59,31 +105,11 @@ query_engine = RetrieverQueryEngine(
 )
 
 # 4. Prompt Engineering: shakespeare!
-qa_prompt_tmpl_str = (
-    "Context information is below.\n"
-    "---------------------\n"
-    "{context_str}\n"
-    "---------------------\n"
-    "You are finance expert"
-    "Given the context information and not prior knowledge\n"
-    "you have to say '질문을 좀 더 구체적으로 해주세요' instead of 'Empty Response' "
-    "한국말로만 대답해주세요"
-    "Answer example: {2024년 이차전지 주가는 예측은 약 3.5%상승 될 것이며, 글로벌 증시의 경우 약 -75pb 하락할 것으로 예상됩니다.}"
-    "Answer example: {회사명을 정확히 입력해 주세요}"
-    
-    "Query: {query_str}\n"
-    "Answer: "
-)
-qa_prompt_tmpl = PromptTemplate(qa_prompt_tmpl_str)
-
-query_engine.update_prompts(
-    {"response_synthesizer:text_qa_template": qa_prompt_tmpl}
-)
 
 
 if __name__ == "__main__":
     
-    text_input = "오늘은 슬픈날이다"
+    text_input = "천보 회사의 현재 주가는 108,400원이야 목표주가를 알려줄 수 있니?"
 
     start_time = time.time()
     response = query_engine.query(text_input)
