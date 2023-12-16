@@ -67,7 +67,7 @@ def data_loader(path):
     documents = SimpleDirectoryReader(path, file_metadata=filename_fn).load_data()
     return documents
 
-def sentence_nodes(documents):
+def sentence_nodes(documents, llm, chunk_size = 512, chunk_overlap = 128):
     '''
         text 파일을 로딩한경우와 pdf 파일을 로딩한 경우 output 형식이 다르다.
         - text 파일 로딩: d.page_content
@@ -83,7 +83,7 @@ def sentence_nodes(documents):
             print("다른 pdf, .txt 외 다른 파일이 로딩되었습니다.")
             
     docs = [Document(text=doc_text)]
-    node_parser = SimpleNodeParser.from_defaults(chunk_size=300, chunk_overlap = 100) # node_parser = SentenceSplitter(chunk_size=300, chunk_overlap = 100) 두 개가 동일한 것
+    node_parser = SimpleNodeParser.from_defaults(chunk_size=chunk_size, chunk_overlap = chunk_overlap) # node_parser = SentenceSplitter(chunk_size=300, chunk_overlap = 100) 두 개가 동일한 것
     base_nodes = node_parser.get_nodes_from_documents(docs)
 
     extractors = [
@@ -102,20 +102,28 @@ def sentence_nodes(documents):
     pipeline = IngestionPipeline(transformations = transformations)
     documents_nodes = pipeline.run(documents = docs)
     
-    return base_nodes, documents_nodes
+    return documents_nodes
 
 
 if __name__ == "__main__":
     
     BackEnd_directory = os.path.dirname(os.path.abspath(os.path.dirname(os.path.abspath(__file__))))
-    test_data_path = os.path.join(BackEnd_directory, 'data', 'Chatbot_db_text')
+    test_data_path = os.path.join(BackEnd_directory, 'data', 'Chatbot_db_pdf')
     file_names = os.listdir(test_data_path)
     
+    # for i, file_name in enumerate(file_names):
+    #     print(file_name)
+    #     documents = pdf_loader(test_data_path, file_name)
+    #     base_nodes, documents_nodes = sentence_nodes(documents)
+    #     print(base_nodes)
+    #     print(documents_nodes)
+        
     for i, file_name in enumerate(file_names):
         print(file_name)
-        documents = text_loader(test_data_path, file_name)
-        base_nodes = sentence_nodes(documents)
+        documents = data_loader(test_data_path)
+        documents_nodes = sentence_nodes(documents)
         print(base_nodes)
+        print(documents_nodes)
     
     pass
 
