@@ -22,8 +22,8 @@ with open(url_JSON_directory_path, 'r', encoding='utf-8') as file:
 
 for filename in todayResearch_file_urls:
     for doc_sum in json_list:
-        if filename == doc_sum['document_summary']['title']:
-            doc_sum['document_summary']['Link'] = todayResearch_file_urls[filename]
+        if filename == doc_sum['title']:
+            doc_sum['Link'] = todayResearch_file_urls[filename]
         else:
             continue
 

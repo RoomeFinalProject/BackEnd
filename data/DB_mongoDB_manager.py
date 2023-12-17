@@ -1,13 +1,10 @@
 from pymongo import MongoClient
-import pprint
-import pymongo
-import datetime
 import json
-import os
 
 
 '''
    DB에 파일 저장하는 것 까지만 완료
+   tutorial: https://pymongo.readthedocs.io/en/stable/tutorial.html
 '''
 
 client = MongoClient("localhost", 27017)
@@ -26,5 +23,5 @@ def insert_DB(data):
     return print("업데이트가 완료되었습니다.")
 
 if __name__ == '__main__':
-    #insert_DB(data)
+    insert_DB(data)
     pass
