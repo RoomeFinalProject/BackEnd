@@ -28,7 +28,8 @@ for filename in todayResearch_file_urls:
             continue
 
 today_date_str = datetime.now().strftime("%Y%m%d")
-output_file_path = f'./data/modified_today_{today_date_str}.json'
+#output_file_path = f'./data/modified_today_{today_date_str}.json'
+output_file_path = f'./data/modified_toprank_{today_date_str}.json'
 with open(output_file_path, 'w', encoding='utf-8') as output_file:
     json.dump(json_list, output_file, ensure_ascii=False, indent=2)
 

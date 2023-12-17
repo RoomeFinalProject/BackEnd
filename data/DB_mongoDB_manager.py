@@ -5,10 +5,10 @@ import datetime
 import json
 import os
 
+
 '''
    DB에 파일 저장하는 것 까지만 완료
 '''
-
 
 client = MongoClient("localhost", 27017)
 
@@ -16,8 +16,7 @@ db = client.Research_Summary
 collection = db.Summary_collection    
 posts = db.posts
 
-
-with open("modified_today_20231215.json", 'r', encoding='utf-8') as file:
+with open("modified_toprank_20231217.json", 'r', encoding='utf-8') as file:
     data = json.load(file)
     
 #print(data)
