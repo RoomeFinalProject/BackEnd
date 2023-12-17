@@ -2,20 +2,20 @@ import os
 import json
 from datetime import datetime
 
-directory_path = "Results_Summary/231215"
+summary_JSON_directory_path = "Results_Summary/toprank_231217"
+url_JSON_directory_path = 'Research_toprank/TopRank_file_urls_20231217.json'
 
-files = os.listdir(directory_path)
+files = os.listdir(summary_JSON_directory_path)
 
-# Read the content of each JSON file
-today_jsons = []
+json_list = []
 for json_file in files:
-    file_path = os.path.join(directory_path, json_file)
+    file_path = os.path.join(summary_JSON_directory_path, json_file)
     with open(file_path, 'r', encoding='utf-8') as file:
         data = json.load(file)
-    today_jsons.append(data)
-        # Process the data as needed
+    json_list.append(data)
+        
 
-with open('Research_daily/20231215/todayResearch_file_urls_20231215.json', 'r', encoding='utf-8') as file:
+with open(url_JSON_directory_path, 'r', encoding='utf-8') as file:
     todayResearch_file_urls = json.load(file)
     
 #print(todayResearch_file_urls)

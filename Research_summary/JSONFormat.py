@@ -1,14 +1,16 @@
 import os
 import json
-from Loading import file_names
 from datetime import datetime
 
 
 def convert_to_jsonfile(file_name, content, file_path):
+    '''
+        MongoDB에 저장하기 위해 json 형식으로 파일을 바꾸어 저장.
+    '''
     title = file_name
     
     date = file_name.split('_')[-2]
-    date_object = datetime.strptime(date, '%Y%m%d')
+    date_object = datetime.strptime(date, '%Y-%m-%d')
     formatted_date = date_object.strftime('%Y-%m-%d')
     
     content = content
@@ -29,16 +31,15 @@ def convert_to_jsonfile(file_name, content, file_path):
         json_file.write(json_result)
         
 
-def convert_to_jsonformat(file_name, content):
-    title = file_name
-    content = content
-    document_summary = {"title": title, "content": content}
+# def convert_to_jsonformat(file_name, content):
+#     '''
+#         MongoDB에 저장하지 않고 직접 Front-End에 보여주고 싶을때 사용.
+#         하지만, 느려서 실용성이 없음.
+#     '''
+#     title = file_name
+#     content = content
+#     document_summary = {"title": title, "content": content}
 
-    json_result = json.dumps({"document_summary": document_summary}, ensure_ascii=False, indent=2)
+#     json_result = json.dumps({"document_summary": document_summary}, ensure_ascii=False, indent=2)
     
-    return json_result
-
-if __name__ == '__main__':
-    for file_name in file_names:
-        
-        break
+#     return json_result
