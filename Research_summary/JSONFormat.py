@@ -16,7 +16,8 @@ def convert_to_jsonfile(file_name, content, file_path):
     content = content
     document_summary = {"title": title, "Date" : formatted_date, "Link" : "", "content": content}
 
-    json_result = json.dumps({"document_summary": document_summary}, ensure_ascii=False, indent=2)
+    #json_result = json.dumps({"document_summary": document_summary}, ensure_ascii=False, indent=2)
+    json_result = json.dumps(document_summary, ensure_ascii=False, indent=2)
 
     # Change the file extension to .json
     file_name_with_extension = os.path.splitext(file_name)[0] + ".json"

@@ -14,10 +14,7 @@ import urllib.request as req
 import numpy as np
 import uvicorn
 from fastapi.responses import JSONResponse
-from Loading import file_names
-from resSummary import summary_list
-
-
+from LoadfromMongoDB import research_summary_from_DB
 
 ###02. 객체, 답변 생성 ------------------------------------------------------------------------------------------------------
 '''
@@ -142,7 +139,7 @@ print("hi")
 # 라우팅
 @app.get('/')
 async def get_last_research():
-    json_responses = summary_list(file_names)
+    json_responses =  research_summary_from_DB(5)
     return json_responses
 
 # /echo
