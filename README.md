@@ -29,3 +29,4 @@
     - git push origin main:chatbot
     - git push origin -d chatbot : 원격 브랜치 삭제
     - git push origin chatbot : 원격 브랜치 추가
+1.5 pip 인스톨후 여전히 실행 불가 일때 -> 어쩔수 없다 가상환경 삭제후 재설치 필요
