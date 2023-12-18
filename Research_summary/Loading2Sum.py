@@ -85,15 +85,16 @@ if __name__ == "__main__":
         저장 전 반드시 Research_daily, Research_toprank를 잘 구분하여 directory_path, target_path를 지정해야한다.
     '''
     current_directory = os.path.dirname(os.path.abspath(__file__))
-    directory_path = os.path.join(current_directory, '..', 'data', 'Research_toprank', '20231217')
+    directory_path = os.path.join(current_directory, '..', 'data', 'Research_daily', '20231218')
+    #directory_path = os.path.join(current_directory, '..', 'data', 'Research_toprank', '20231217')
     file_names = os.listdir(directory_path)
     
     finance_docs = create_finance_docs(file_names, directory_path)
     doc_summary_index = document_summary(finance_docs)
     print(doc_summary_index)
     
-    #target_path = os.path.join(current_directory, '..', 'data', 'Results_Summary', 'daily_231214')
-    target_path = os.path.join(current_directory, '..', 'data', 'Results_Summary', 'toprank_231217')
+    target_path = os.path.join(current_directory, '..', 'data', 'Results_Summary', 'daily_231218')
+    #target_path = os.path.join(current_directory, '..', 'data', 'Results_Summary', 'toprank_231217')
     for file_name in file_names:
         content = doc_summary_index.get_document_summary(f"{file_name}")
         json_result = convert_to_jsonfile(file_name, content, target_path)

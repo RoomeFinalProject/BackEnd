@@ -1,5 +1,7 @@
 '''
 한번에 embedding 할수 있는 토큰수 : 4097
+이 파일을 사용하면 한번에 pdf loading 부터 node 분할, pinecone upload까지 수행 가능.
+
 '''
 import os
 import sys
@@ -39,6 +41,12 @@ BackEnd_directory = os.path.dirname(os.path.abspath(os.path.dirname(os.path.absp
 test_data_path = os.path.join(BackEnd_directory, 'data', 'Chatbot_db_pdf')
 
 def pdf_loader(test_data_path, file_name):
+    '''
+        pdf를 loading하는 함수 documents로 읽어온다.
+        txt 파일이 없을 시 simpledirectoryreader보다 효율적임
+        simpledirectoryreader의 경우 파일 로딩이 실패하면 어느 시점인지 모르기 때문에 처음부터 다시 해야함.
+        pdf 파일을 각각 loading하면 실패한 시점부터 다시 가능
+    '''
     PDFReader = download_loader("PDFReader")
     loader = PDFReader()
     document_path = os.path.join(test_data_path, file_name)

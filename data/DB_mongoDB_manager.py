@@ -13,7 +13,10 @@ db = client.Research_Summary
 collection = db.Summary_collection    
 posts = db.posts
 
-with open("./data/modified_toprank_20231217.json", 'r', encoding='utf-8') as file:
+#with open("./data/modified_toprank_20231217.json", 'r', encoding='utf-8') as file:
+#    data = json.load(file)
+
+with open("./data/modified_today_20231218.json", 'r', encoding='utf-8') as file:
     data = json.load(file)
     
 #print(data)

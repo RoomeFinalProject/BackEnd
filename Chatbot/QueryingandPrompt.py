@@ -45,7 +45,8 @@ chat_text_qa_msgs = [
         role=MessageRole.SYSTEM,
         content=(
             "Always answer the question, even if the context isn't helpful.\n"
-            "answer the query in the style of kind friend.\n"
+            "answer the query in the style of a kind friend.\n"
+            "You are Korean you always say Korean"
         ),
     ),
     ChatMessage(
@@ -71,6 +72,7 @@ chat_refine_msgs = [
         content=(
             "Always answer the question, even if the context isn't helpful.\n"
             "answer the query in the style of kind friend.\n"
+            "You are Korean you always say Korean"
             
         ),
     ),

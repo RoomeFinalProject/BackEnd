@@ -8,8 +8,14 @@ import os
 import json
 
 # 변수 저장
-#today_date_str = datetime.now().strftime("%Y%m%d")
-today_date_str = "20231214"
+'''
+    파일명의 날짜를 2023-11-30 형식으로 통일하기 위해 formatted_date를 삽입
+'''
+today_date_str = datetime.now().strftime("%Y%m%d")
+date_object = datetime.strptime(today_date_str, "%Y%m%d")
+formatted_date = date_object.strftime("%Y-%m-%d")
+
+#today_date_str = "20231214"
 download_directory = os.path.join("./data/Research_daily", today_date_str)
 
 company_name = "유안타증권"
@@ -74,7 +80,7 @@ while True:
         pdf_response = requests.get(full_pdf_url, stream=True)
         
         # Specify the filename for saving
-        filename = f"{file_title}_{today_date_str}_{company_name}.pdf"
+        filename = f"{file_title}_{formatted_date}_{company_name}.pdf"
         file_path = os.path.join(download_directory, filename)
 
         # Save the PDF file
