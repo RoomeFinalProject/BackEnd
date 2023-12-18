@@ -24,7 +24,7 @@ router = APIRouter()
 # 라우팅
 @router.get('/')
 async def get_last_research():
-    json_responses =  research_summary_from_DB(5)
+    json_responses =  research_summary_from_DB(7)
     print(json_responses)
     return json_responses
 

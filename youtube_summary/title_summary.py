@@ -14,9 +14,9 @@ youtube = {
 no_embed = 'https://noembed.com/embed?url='
 
 
-@app.get('/')
+@app.get('/aa')
 async def read_root(request: Request):
-    return templates.TemplateResponse("index2.html", {"request": request})
+    return templates.TemplateResponse("../templates/index2.html", {"request": request})
 
 
 @app.post('/get_info')
@@ -29,7 +29,7 @@ async def get_info(request: Request, video_url: str = Form(...)):
 
     data = response.json()
     set_info(data)
-
+    print("set_info(data)", set_info(data))
     # Print the results to the console
     print_results()
 

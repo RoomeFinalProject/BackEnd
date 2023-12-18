@@ -4,7 +4,8 @@ from fastapi.templating import Jinja2Templates
 from youtube_transcript_api import YouTubeTranscriptApi
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from dotenv import load_dotenv
-import openai 
+import openai
+import requests 
 import os
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -33,6 +34,16 @@ openai.api_key = os.getenv('OPENAI_API_KEY')
 # Setup Jinja2 templates
 templates = Jinja2Templates(directory="templates")
 
+youtube = {
+    "author": None,
+    "vid_title": None,
+}
+
+
+def set_info(data):
+    youtube['author'] = data['author_name']
+    youtube['vid_title'] = data['title']
+
 def get_transcript(youtube_url):
     video_id = youtube_url.split("v=")[-1]
     transcript_list = YouTubeTranscriptApi.list_transcripts(video_id)
@@ -52,7 +63,7 @@ def get_transcript(youtube_url):
             raise Exception("적합한 트랜스크립트가 없습니다.")
 
     full_transcript = " ".join([part['text'] for part in transcript.fetch()])
-    return full_transcript, language_code  # Return both the transcript and detected language
+    return full_transcript, language_code   # Return both the transcript and detected language
 
 async def summarize_with_langchain_and_openai(transcript, language_code, model_name='gpt-3.5-turbo'):
     # Split the document if it's too long
@@ -96,15 +107,32 @@ async def linked_video(request: Request, link: str):
         # Getting both the transcript and language_code
         
         transcript, language_code = get_transcript(link)
+        print("link", link)
         status_text = '요약본 생성 중...'
         progress = 75
 
         model_name = 'gpt-3.5-turbo'
         summary = await summarize_with_langchain_and_openai(transcript, language_code, model_name)
-        print(summary)
+        print("summary", summary)
         status_text = '요약:'
         progress = 100
+
+        no_embed = 'https://noembed.com/embed?url='
+        full_url = no_embed + link
+        response = requests.get(full_url)
+        data = response.json()
+
+        youtube = {
+            "author": None,
+            "vid_title": None,
+            "summary" : None
+        }
+
+        youtube['author'] = data['author_name']
+        youtube['vid_title'] = data['title']
+        youtube['summary'] = summary
+        print('data1111111111111111', data)
         
-        return JSONResponse(content={"summary": summary})
+        return JSONResponse(content=youtube)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.staticfiles import StaticFiles
+import requests
 # from Backend 폴더내의 쓰여지는 주요 함수모음
 from youtube_summary.summary import get_latest_video # Import the summary function
 from youtube_summary.summary import get_video_info, channel_mapping
@@ -51,18 +52,38 @@ async def linked_video(request: Request, link: str):
         # Getting both the transcript and language_code
         
         transcript, language_code = get_transcript(link)
+        print("link", link)
         status_text = '요약본 생성 중...'
         progress = 75
 
         model_name = 'gpt-3.5-turbo'
         summary = await summarize_with_langchain_and_openai(transcript, language_code, model_name)
-        print(summary)
+        print("summary", summary)
         status_text = '요약:'
         progress = 100
+
+        no_embed = 'https://noembed.com/embed?url='
+        full_url = no_embed + link
+        response = requests.get(full_url)
+        data = response.json()
+
+        youtube = {
+            "author": None,
+            "vid_title": None,
+            "summary" : None
+        }
+
+        youtube['author'] = data['author_name']
+        youtube['vid_title'] = data['title']
+        youtube['summary'] = summary
+        print('data1111111111111111', data)
         
-        return JSONResponse(content={"summary": summary})
+        return JSONResponse(content=youtube)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
+
+
 
 # ----------------------------------------------------------------------------
 # research_summary -----------------------------------------------------------
