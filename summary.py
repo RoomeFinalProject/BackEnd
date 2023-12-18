@@ -6,11 +6,9 @@ import os
 import openai
 from llama_index import SimpleDirectoryReader, Document, GPTVectorStoreIndex, LLMPredictor, ServiceContext, PromptHelper
 from googleapiclient.discovery import build
-from youtube_transcript_api import YouTubeTranscriptApi
 from google.oauth2 import service_account
 from langchain.chat_models import ChatOpenAI
-from langchain.embeddings import HuggingFaceEmbeddings
-from langchain.embeddings import OpenAIEmbeddings
+from langchain.embeddings import HuggingFaceEmbeddings, OpenAIEmbeddings
 from llama_index.embeddings.langchain import LangchainEmbedding
 import redis
 from fastapi.responses import JSONResponse
@@ -162,7 +160,7 @@ def summarize_documents(channel_name, video_title, korean_transcript, thumbnail,
         documents = load_documents_from_text(korean_transcript)
         if documents:
             selected_index = GPTVectorStoreIndex.from_documents(documents, service_context=ServiceContext.from_defaults(embed_model=embed_model))
-            result = selected_index.as_query_engine().query('텍스트의 내용을 Summarize the following in 10 bullet points.')
+            result = selected_index.as_query_engine().query('텍스트의 내용을 10개의 핵심 문단으로 요약해주세요. 중복 내용이면 한번만 요약 해주세요.')
             print(f"문서 요약:\n{result}\n")
             summary = str(result)
             collection.update_one(                                                                      # MongoDB에 자막 요약 정보 저장
@@ -175,15 +173,15 @@ def summarize_documents(channel_name, video_title, korean_transcript, thumbnail,
             print("자막이 존재하지 않아 요약을 수행할 수 없습니다.")
     return summary
 
+# 임베딩 모델 초기화
+embed_model = LangchainEmbedding(HuggingFaceEmbeddings(model_name='sentence-transformers/xlm-r-100langs-bert-base-nli-stsb-mean-tokens'))
+
 # 8. 모델 색인화 과정
 def get_video_info(channel_id, channel_name):
     all_video_data = []  # 특정 채널의 동영상 정보 저장
+    global embed_model
     try:
         video_title, korean_transcript, thumbnail, publish_time = load_video_data(channel_id)
-        # 임베딩 모델 초기화
-        embed_model = LangchainEmbedding(HuggingFaceEmbeddings(
-            model_name='sentence-transformers/xlm-r-100langs-bert-base-nli-stsb-mean-tokens'
-        ))
         # 문서 요약 생성
         summary = summarize_documents(channel_name, video_title, korean_transcript, thumbnail, publish_time, embed_model)
         # 딕셔너리 생성
