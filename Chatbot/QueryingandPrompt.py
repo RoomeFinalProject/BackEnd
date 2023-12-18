@@ -104,27 +104,6 @@ query_engine = RetrieverQueryEngine(
     node_postprocessors=node_postprocessors,
 )
 
-<<<<<<< HEAD
-# 4. Prompt Engineering: shakespeare!
-qa_prompt_tmpl_str = (
-    "Context information is below.\n"
-    "---------------------\n"
-    "{context_str}\n"
-    "---------------------\n"
-    "Given the context information and not prior knowledge, "
-    "Answer only Korean"
-    "\n"
-    "Query: {query_str}\n"
-    "Answer: "
-)
-qa_prompt_tmpl = PromptTemplate(qa_prompt_tmpl_str)
-
-query_engine.update_prompts(
-    {"response_synthesizer:text_qa_template": qa_prompt_tmpl}
-)
-
-=======
->>>>>>> 1ef64396a89c842ba343423812b518abd1956e27
 
 if __name__ == "__main__":
     

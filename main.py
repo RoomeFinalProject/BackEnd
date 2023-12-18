@@ -3,8 +3,7 @@ from fastapi.staticfiles import StaticFiles
 # from Backend 폴더내의 쓰여지는 주요 함수모음
 from youtube_summary.summary import get_latest_video # Import the summary function
 from youtube_summary.summary import get_video_info, channel_mapping
-from Research_summary.run_resSummary import summary_list
-from Research_summary.Loading import file_names
+from Research_summary.run_resSummary import research_summary_from_DB
 from Chatbot.run_Chatbot import main_chat_proc
 from youtube_summary.link_summary import get_transcript, summarize_with_langchain_and_openai
 
@@ -67,11 +66,11 @@ async def linked_video(request: Request, link: str):
 
 # ----------------------------------------------------------------------------
 # research_summary -----------------------------------------------------------
-@app.get('/research')
+@app.get('/')
 async def get_last_research():
-    summary_text = summary_list(file_names)
-    print("summary_text", summary_text )
-    return JSONResponse(content=summary_text)
+    json_responses =  research_summary_from_DB(5)
+    print(json_responses)
+    return json_responses
 
 
 

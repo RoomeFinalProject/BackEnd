@@ -70,13 +70,6 @@ origins = [
     # Add other frontend origins as needed
 ]
 
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=origins,
-#     allow_credentials=True,
-#     allow_methods=["*"],
-#     allow_headers=["*"],
-# )
 
 # 5. 채널 ID와 이름을 매핑
 channel_mapping = {   
