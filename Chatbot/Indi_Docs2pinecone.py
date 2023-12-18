@@ -37,7 +37,7 @@ pinecone.init(api_key=os.environ["PINECONE_API_KEY"],environment=os.environ["PIN
 llm = OpenAI(temperature=0, model="gpt-3.5-turbo")
 
 BackEnd_directory = os.path.dirname(os.path.abspath(os.path.dirname(os.path.abspath(__file__))))
-test_data_path = os.path.join(BackEnd_directory, 'data', 'testdata')
+test_data_path = os.path.join(BackEnd_directory, 'data', 'Chatbot_db_pdf')
 
 def pdf_loader(test_data_path, file_name):
     PDFReader = download_loader("PDFReader")
@@ -109,7 +109,7 @@ def emb_pinecone(documents_nodes, index_name = 'openai'):
     storage_context = StorageContext.from_defaults(vector_store=vector_store)
 
 
-    # 4. Service contenxt 조건 설정: 어떤 embedding 모델을 사용할 것인지 결정
+    # 4. Service contenxt 조건 설정: 어떤 embedding 모델을 사용할 것인지 결정, llm은 생성형, embedding은 ada default로 설정되어 있음.
     service_context=ServiceContext.from_defaults(llm=llm)
 
 
@@ -127,7 +127,7 @@ if __name__ == "__main__":
     for i, file_name in enumerate(file_names):
         documents = pdf_loader(test_data_path, file_name)
         print(f'[{i}] {file_name} PDF loading has been completed.')
-        documents_nodes = docs2nodes(documents, llm)
+        documents_nodes = docs2nodes(documents, llm, chunk_size = 341, chunk_overlap = 86)
         print(f'[{i}] {file_name} PDF Nodes have been created.')
         emb_pinecone(documents_nodes)
         print(f'[{i}] {file_name} The PDF has been converted to vectors and uploaded to Pinecone.')

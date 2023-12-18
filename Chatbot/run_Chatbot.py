@@ -11,8 +11,11 @@ import time                     # 답변 시간 계산용, 제한 시간 체크�
 import queue as q               # 자료구조, 큐, 요청을 차곡차곡 쌓아서 하나씩 꺼내서 처리
 import urllib.request as req
 from .chatbot import my_chatbot
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 1ef64396a89c842ba343423812b518abd1956e27
 
 # def get_openai_key():
 #     try:

@@ -8,8 +8,9 @@ import os
 import json
 
 # 변수 저장
-today_date_str = datetime.now().strftime("%Y%m%d")
-download_directory = os.path.join("./Research_daily", today_date_str)
+#today_date_str = datetime.now().strftime("%Y%m%d")
+today_date_str = "20231214"
+download_directory = os.path.join("./data/Research_daily", today_date_str)
 
 company_name = "유안타증권"
 title_prefix_xpath = '//*[@id="content"]/div/div[2]/div/div[4]/div/div/div[1]/ul/li'
@@ -96,7 +97,8 @@ while True:
 
 print(pdf_file_url)
 # Save the DataFrame to a JSON file
-with open(f'FileURLJson/todayResearch_file_urls_{today_date_str}.json', 'w', encoding='utf-8') as json_file:
+    # 저장 경로 바꾸기
+with open(f'data/Research_daily/todayResearch_file_urls_{today_date_str}.json', 'w', encoding='utf-8') as json_file:
     json.dump(pdf_file_url, json_file, ensure_ascii=False)
 
 driver.quit()

@@ -6,10 +6,16 @@ def my_chatbot(text_input):
     start_time = time.time()
     response = query_engine.query(text_input)
     
+    selected_metadata = []
     if response.metadata is not None:
-        selected_metadata = [{'page_label': metadata['page_label'], 'file_name': metadata['file_name']} for metadata in response.metadata.values()]
-    else:
+        for metadata in response.metadata.values():
+            page_label = metadata.get('page_label', None)
+            file_name = metadata.get('file_name', None)
+            selected_metadata.append({'page_label': page_label, 'file_name': file_name})
+            
+    if not selected_metadata:
         selected_metadata = 'Reference가 없습니다.'
+        
     response_time = time.time() - start_time
     # Print the selected metadata
     print("Response Time: {:.2f} seconds".format(response_time)) 
