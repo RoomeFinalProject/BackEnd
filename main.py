@@ -34,6 +34,8 @@ async def get_latest_video():
     for channel_id, channel_name in channel_mapping.items():
         video_info = get_video_info(channel_id, channel_name)
         all_video_data.append(video_info)
+        print( '종료' )
+        #break
     print(all_video_data)
 
     return JSONResponse(content=all_video_data)

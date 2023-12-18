@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Video Information</title>
+</head>
+<body>
+    <h1>유튜브 영상 정보</h1>
+    <form action="/get_info" method="post">
+        <label for="video_url">유튜브 영상 URL를 입력하시오:</label>
+        <input type="text" id="video_url" name="video_url" required>
+        <button type="submit">Get Info</button>
+    </form>
+    
+    {% if results %}
+        <h2>Results:</h2>
+        <ul>
+            <li><strong>Author:</strong> {{ results.author }}</li>
+            <li><strong>Video Title:</strong> {{ results.vid_title }}</li>
+        </ul>
+    {% endif %}
+
+</body>
+</html>

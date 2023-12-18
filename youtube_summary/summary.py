@@ -176,14 +176,15 @@ def summarize_documents(channel_name, video_title, korean_transcript, thumbnail,
     return summary
 
 # 8. 모델 색인화 과정
+# 임베딩 모델 초기화
+embed_model = LangchainEmbedding(HuggingFaceEmbeddings(
+    model_name='sentence-transformers/xlm-r-100langs-bert-base-nli-stsb-mean-tokens'
+))
 def get_video_info(channel_id, channel_name):
     all_video_data = []  # 특정 채널의 동영상 정보 저장
     try:
         video_title, korean_transcript, thumbnail, publish_time = load_video_data(channel_id)
-        # 임베딩 모델 초기화
-        embed_model = LangchainEmbedding(HuggingFaceEmbeddings(
-            model_name='sentence-transformers/xlm-r-100langs-bert-base-nli-stsb-mean-tokens'
-        ))
+        global embed_model
         # 문서 요약 생성
         summary = summarize_documents(channel_name, video_title, korean_transcript, thumbnail, publish_time, embed_model)
         # 딕셔너리 생성
@@ -207,6 +208,8 @@ async def get_latest_video():
     for channel_id, channel_name in channel_mapping.items():
         video_info = get_video_info(channel_id, channel_name)
         all_video_data.append(video_info)
+        print( '종료' )
+        break
     return JSONResponse(content=all_video_data)
 
 # if __name__ == "__main__":

@@ -71,7 +71,8 @@ async def summarize_with_langchain_and_openai(transcript, language_code, model_n
     prompt = f'''다음 텍스트를 {language_code}로 요약해주세요..
     텍스트: {text_to_summarize}
     
-    텍스트의 내용을 Summarize the following in 10 bullet points.'''
+    텍스트의 내용을 Summarize in 10 bullet points.
+    전체 요약은 100자 이상 500자 이하로 해주세요 '''
 
 
     # Start summarizing using OpenAI

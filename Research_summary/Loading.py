@@ -38,3 +38,4 @@ directory_path = os.path.join(current_directory, '..', 'data', 'testdata')
 file_names = list_files(directory_path)    
 finance_docs = create_finance_docs(file_names, directory_path)
 print('file_names and finance_docs are created')
+

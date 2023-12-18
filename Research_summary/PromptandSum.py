@@ -8,7 +8,6 @@ current_directory = os.path.dirname(os.path.abspath(__file__))
 full_path = os.path.join(current_directory, '..')
 sys.path.append(full_path)
 from access import get_openai_key, get_pinecone_env, get_pinecone_key
-
 from .Loading import file_names, finance_docs
 from .JSONFormat import convert_to_jsonformat
 from .JSONFormat import convert_to_jsonfile
