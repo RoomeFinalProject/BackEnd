@@ -69,7 +69,6 @@ async def linked_video(request: Request, link: str):
 @app.get('/')
 async def get_last_research():
     json_responses =  research_summary_from_DB(5)
-    print(json_responses)
     return json_responses
 
 

@@ -78,3 +78,4 @@ redis
 fastapi_cache
 cache-manager
 uvicorn
+python-multipart
