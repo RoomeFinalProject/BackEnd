@@ -84,8 +84,9 @@ if __name__ == "__main__":
         directory_path와 target_path는 실수하지 않도록 일부로 날짜 형식을 다르게 적었다.
         저장 전 반드시 Research_daily, Research_toprank를 잘 구분하여 directory_path, target_path를 지정해야한다.
     '''
+ 
     current_directory = os.path.dirname(os.path.abspath(__file__))
-    directory_path = os.path.join(current_directory, '..', 'data', 'Research_daily', '20231218')
+    directory_path = os.path.join(current_directory, '..', 'data', 'Research_daily', '20231205')
     #directory_path = os.path.join(current_directory, '..', 'data', 'Research_toprank', '20231217')
     file_names = os.listdir(directory_path)
     
@@ -93,7 +94,7 @@ if __name__ == "__main__":
     doc_summary_index = document_summary(finance_docs)
     print(doc_summary_index)
     
-    target_path = os.path.join(current_directory, '..', 'data', 'Results_Summary', 'daily_231218')
+    target_path = os.path.join(current_directory, '..', 'data', 'Results_Summary', 'daily_231205')
     #target_path = os.path.join(current_directory, '..', 'data', 'Results_Summary', 'toprank_231217')
     for file_name in file_names:
         content = doc_summary_index.get_document_summary(f"{file_name}")
