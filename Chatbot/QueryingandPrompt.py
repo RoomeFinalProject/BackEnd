@@ -45,7 +45,8 @@ chat_text_qa_msgs = [
         role=MessageRole.SYSTEM,
         content=(
             "Always answer the question, even if the context isn't helpful.\n"
-            "answer the query in the style of kind friend.\n"
+            "answer the query in the style of a kind friend.\n"
+            "You always say Korean"
         ),
     ),
     ChatMessage(
@@ -71,6 +72,7 @@ chat_refine_msgs = [
         content=(
             "Always answer the question, even if the context isn't helpful.\n"
             "answer the query in the style of kind friend.\n"
+            "You are Korean you always say Korean"
             
         ),
     ),
@@ -107,7 +109,7 @@ query_engine = RetrieverQueryEngine(
 
 if __name__ == "__main__":
     
-    text_input = "천보 회사의 현재 주가는 108,400원이야 목표주가를 알려줄 수 있니?"
+    text_input = "나 오늘 너무 힘들어 ㅠㅠㅜㅜㅠㅠ"
 
     start_time = time.time()
     response = query_engine.query(text_input)
@@ -119,10 +121,12 @@ if __name__ == "__main__":
     
     if response.metadata:
         for source_node in response.source_nodes:
-            file_name, page_label = source_node.metadata['file_name'], source_node.metadata['page_label']
+            file_name = source_node.metadata.get('file_name', 'N/A')
+            page_label = source_node.metadata.get('page_label', 'N/A')
             selected_node, similarity_score = source_node.get_content(), source_node.get_score()
-            print(f'file_name : {file_name}, page_label : {page_label}, similarity_score : {similarity_score}')
-            print('selected_node :', selected_node)
-            print("===============================================================")
+
+            print(f'file_name: {file_name}, page_label: {page_label}, similarity_score: {similarity_score}')
+            print('selected_node:', selected_node)
+        print("===============================================================")
     # 참고링크: https://docs.llamaindex.ai/en/stable/examples/query_engine/custom_query_engine.html
         

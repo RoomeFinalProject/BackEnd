@@ -119,16 +119,22 @@ def emb_pinecone(documents_nodes, index_name = 'openai'):
     # 4. Service contenxt 조건 설정: 어떤 embedding 모델을 사용할 것인지 결정, llm은 생성형, embedding은 ada default로 설정되어 있음.
     service_context=ServiceContext.from_defaults(llm=llm)
 
-
     # 5. Embedding
     index = VectorStoreIndex( # <-# document에서 직접 불러올 시 VectorStoreIndex.from_documents // nodes를 만들어 불러올시 VectorStoreIndex
                             documents_nodes,
                             storage_context=storage_context,
                             service_context=service_context,
                             )
-    return print('Embedding and uploding have beend completed')
+    
+    print('Embedding and uploding have beend completed')
+    return index
 
-
+file_names = os.listdir(test_data_path)
+for i, file_name in enumerate(file_names):
+    documents = pdf_loader(test_data_path, file_name)
+    print(f'[{i}] {file_name} PDF loading has been completed.')
+    documents_nodes = docs2nodes(documents, llm, chunk_size = 341, chunk_overlap = 86)
+    
 if __name__ == "__main__":
     file_names = os.listdir(test_data_path)
     for i, file_name in enumerate(file_names):
@@ -144,3 +150,4 @@ if __name__ == "__main__":
         print('===========================================================')
         #print('text node. metadata:', documents_nodes[10].metadata)
     pass
+
