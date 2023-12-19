@@ -42,7 +42,6 @@ def create_finance_docs(file_names, directory_path):
 def document_summary(finance_docs):
     '''
         finance_docs을 불러와 파일이름에 따라 구분하여 요약본을 만들어 낸다.
-        
     '''
     # LLM (gpt-3.5-turbo)
     chatgpt = OpenAI(temperature=0, model="gpt-3.5-turbo")
@@ -86,7 +85,7 @@ if __name__ == "__main__":
     '''
  
     current_directory = os.path.dirname(os.path.abspath(__file__))
-    directory_path = os.path.join(current_directory, '..', 'data', 'Research_daily', '20231205')
+    directory_path = os.path.join(current_directory, '..', 'data', 'Research_daily', '20231214')
     #directory_path = os.path.join(current_directory, '..', 'data', 'Research_toprank', '20231217')
     file_names = os.listdir(directory_path)
     
@@ -94,7 +93,7 @@ if __name__ == "__main__":
     doc_summary_index = document_summary(finance_docs)
     print(doc_summary_index)
     
-    target_path = os.path.join(current_directory, '..', 'data', 'Results_Summary', 'daily_231205')
+    target_path = os.path.join(current_directory, '..', 'data', 'Results_Summary', 'daily_231214')
     #target_path = os.path.join(current_directory, '..', 'data', 'Results_Summary', 'toprank_231217')
     for file_name in file_names:
         content = doc_summary_index.get_document_summary(f"{file_name}")
