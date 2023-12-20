@@ -85,7 +85,7 @@ if __name__ == "__main__":
     '''
  
     current_directory = os.path.dirname(os.path.abspath(__file__))
-    directory_path = os.path.join(current_directory, '..', 'data', 'Research_daily', '20231214')
+    directory_path = os.path.join(current_directory, '..', 'data', 'Research_daily', '20231220')
     #directory_path = os.path.join(current_directory, '..', 'data', 'Research_toprank', '20231217')
     file_names = os.listdir(directory_path)
     
@@ -93,7 +93,7 @@ if __name__ == "__main__":
     doc_summary_index = document_summary(finance_docs)
     print(doc_summary_index)
     
-    target_path = os.path.join(current_directory, '..', 'data', 'Results_Summary', 'daily_231214')
+    target_path = os.path.join(current_directory, '..', 'data', 'Results_Summary', 'daily_231220')
     #target_path = os.path.join(current_directory, '..', 'data', 'Results_Summary', 'toprank_231217')
     for file_name in file_names:
         content = doc_summary_index.get_document_summary(f"{file_name}")

@@ -11,8 +11,8 @@ import json
 '''
     파일명의 날짜를 2023-11-30 형식으로 통일하기 위해 formatted_date를 삽입
 '''
-#today_date_str = datetime.now().strftime("%Y%m%d")
-today_date_str = "20231205"
+today_date_str = datetime.now().strftime("%Y%m%d")
+#today_date_str = "20231205"
 date_object = datetime.strptime(today_date_str, "%Y%m%d")
 formatted_date = date_object.strftime("%Y-%m-%d")
 

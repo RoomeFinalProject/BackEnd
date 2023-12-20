@@ -109,7 +109,7 @@ query_engine = RetrieverQueryEngine(
 
 if __name__ == "__main__":
     
-    text_input = "나 오늘 너무 힘들어 ㅠㅠㅜㅜㅠㅠ"
+    text_input = "코롱인더의 목표주가 및 2024년 아라미드 증설에 의한 영업이익에 대해 설명해줘"
 
     start_time = time.time()
     response = query_engine.query(text_input)
